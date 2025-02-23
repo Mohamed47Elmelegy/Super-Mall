@@ -1,0 +1,5 @@
+bricks:
+  feature:
+    path: bricks/feature
+  assets:
+    path: bricks/assets
