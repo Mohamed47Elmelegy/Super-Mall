@@ -38,7 +38,7 @@ class RegisterScreen extends StatelessWidget {
   _usernameField() {
     return TextFormField(
       decoration: InputDecoration(
-        hintText: 'Password',
+        hintText: 'Username',
         hintStyle: TextStyle(
           color: AppColorLight.grey2,
           fontSize: 16.sp,
