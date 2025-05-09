@@ -25,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: PageView(
           controller: _pageController,
           children: [
-            _loginViewStep1(),
-            _loginViewStep2(),
+            SingleChildScrollView(child: _loginViewStep1()),
+            SingleChildScrollView(child: _loginViewStep2()),
           ],
         ),
       ),

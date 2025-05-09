@@ -1,3 +1,3 @@
-class {{name.pascalCase()}} {
+// class {{name.pascalCase()}} {
   
-}
+// }

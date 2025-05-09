@@ -1,3 +1,3 @@
-class {{name.pascalCase()}}Repository {
+// class {{name.pascalCase()}}Repository {
   
-}
+// }
