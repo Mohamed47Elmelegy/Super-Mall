@@ -1,19 +1,19 @@
-sealed class RegisterState {
-  
-}
+import '../../data/model/register.dart';
 
-class RegisterInitial extends RegisterState {
-  
-}
+sealed class RegisterState {}
 
-class RegisterLoading extends RegisterState {
-  
-}
+class RegisterInitial extends RegisterState {}
+
+class RegisterLoading extends RegisterState {}
 
 class RegisterLoaded extends RegisterState {
-  
+  final RegistrationModel registrationModel;
+
+  RegisterLoaded(this.registrationModel);
 }
 
 class RegisterError extends RegisterState {
-  
+  final String message;
+
+  RegisterError(this.message);
 }

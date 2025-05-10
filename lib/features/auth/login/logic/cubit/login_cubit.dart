@@ -1,23 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:super_mall/features/auth/login/data/model/login.dart';
+import 'package:super_mall/features/auth/login/data/repository/login_repository.dart';
 import 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(LoginInitial());
+  final LoginRepositoryBase _repository;
 
-  Future<void> login(String email, String password) async {
+  LoginCubit(this._repository) : super(LoginInitial());
+
+  Future<void> login(UserLoginModel loginData) async {
     try {
       emit(LoginLoading());
-
-      // TODO: Add repository call here when API is ready
-      // final result = await _repository.login(email, password);
-      // result.fold(
-      //   (failure) => emit(LoginError(message: failure.message)),
-      //   (success) => emit(LoginLoaded()),
-      // );
-
-      // Temporary success for testing
-      emit(LoginLoaded());
+      final result = await _repository.login(loginData);
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (success) => emit(LoginLoaded()),
+      );
     } catch (e) {
       emit(LoginError(message: e.toString()));
     }
@@ -27,15 +26,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       emit(LoginLoading());
 
-      // TODO: Add repository call here when API is ready
-      // final result = await _repository.loginWithGoogle();
-      // result.fold(
-      //   (failure) => emit(LoginError(message: failure.message)),
-      //   (success) => emit(LoginLoaded()),
-      // );
+      final result = await _repository.loginWithGoogle();
 
-      // Temporary success for testing
-      emit(LoginLoaded());
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (success) => emit(LoginLoaded()),
+      );
     } catch (e) {
       emit(LoginError(message: e.toString()));
     }
@@ -45,15 +41,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       emit(LoginLoading());
 
-      // TODO: Add repository call here when API is ready
-      // final result = await _repository.loginWithFacebook();
-      // result.fold(
-      //   (failure) => emit(LoginError(message: failure.message)),
-      //   (success) => emit(LoginLoaded()),
-      // );
+      final result = await _repository.loginWithFacebook();
 
-      // Temporary success for testing
-      emit(LoginLoaded());
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (success) => emit(LoginLoaded()),
+      );
     } catch (e) {
       emit(LoginError(message: e.toString()));
     }
@@ -63,15 +56,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       emit(LoginLoading());
 
-      // TODO: Add repository call here when API is ready
-      // final result = await _repository.resetPassword(email);
-      // result.fold(
-      //   (failure) => emit(LoginError(message: failure.message)),
-      //   (success) => emit(LoginLoaded()),
-      // );
+      final result = await _repository.resetPassword(email);
 
-      // Temporary success for testing
-      emit(LoginLoaded());
+      result.fold(
+        (failure) => emit(LoginError(message: failure.message)),
+        (success) => emit(LoginLoaded()),
+      );
     } catch (e) {
       emit(LoginError(message: e.toString()));
     }

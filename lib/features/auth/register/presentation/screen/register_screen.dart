@@ -1,42 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/auth/forget_password/presentation/screen/forget_password_screen.dart';
+import 'package:super_mall/features/auth/register/data/model/register.dart';
+import 'package:super_mall/features/auth/register/logic/cubit/register_cubit.dart';
+import 'package:super_mall/features/auth/register/logic/cubit/register_state.dart';
+import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 
-class RegisterScreen extends StatelessWidget {
+import '../../../../../service_locator.dart';
+import '../../data/repository/register_repository.dart';
+
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppbarBackTitle(
-        isBackable: true,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          children: [
-            SizedBox(height: 20.h),
-            _screenTitle(),
-            SizedBox(height: 20.h),
-            _usernameField(),
-            SizedBox(height: 11.h),
-            _emailField(),
-            SizedBox(height: 11.h),
-            _passwordField(),
-            SizedBox(height: 30.h),
-            _registerButtton(),
-            SizedBox(height: 30.h),
-            _forgetPasswordClickable(context),
-          ],
-        ),
+    return BlocProvider(
+      create: (context) => RegisterCubit(getIt<RegisterRepositoryBase>()),
+      child: BlocConsumer<RegisterCubit, RegisterState>(
+        listener: (context, state) {
+          if (state is RegisterError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          } else if (state is RegisterLoaded) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppbarBackTitle(isBackable: true),
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(height: 20.h),
+                    _screenTitle(),
+                    SizedBox(height: 20.h),
+                    _usernameField(),
+                    SizedBox(height: 11.h),
+                    _emailField(),
+                    SizedBox(height: 11.h),
+                    _passwordField(),
+                    SizedBox(height: 30.h),
+                    _registerButton(state),
+                    SizedBox(height: 30.h),
+                    _forgetPasswordClickable(context),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  _usernameField() {
+  TextFormField _usernameField() {
     return TextFormField(
+      controller: _nameController,
       decoration: InputDecoration(
         hintText: 'Username',
         hintStyle: TextStyle(
@@ -44,11 +91,18 @@ class RegisterScreen extends StatelessWidget {
           fontSize: 16.sp,
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your username';
+        }
+        return null;
+      },
     );
   }
 
-  _emailField() {
+  TextFormField _emailField() {
     return TextFormField(
+      controller: _emailController,
       decoration: InputDecoration(
         hintText: 'Email Address',
         hintStyle: TextStyle(
@@ -56,17 +110,61 @@ class RegisterScreen extends StatelessWidget {
           fontSize: 16.sp,
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        if (!value.contains('@')) {
+          return 'Please enter a valid email';
+        }
+        return null;
+      },
     );
   }
 
-  _passwordField() {
+  TextFormField _passwordField() {
     return TextFormField(
+      controller: _passwordController,
+      obscureText: true,
       decoration: InputDecoration(
         hintText: 'Password',
         hintStyle: TextStyle(
           color: AppColorLight.grey2,
           fontSize: 16.sp,
         ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        if (value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _registerButton(RegisterState state) {
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        onPressed: state is RegisterLoading
+            ? null
+            : () {
+                if (_formKey.currentState!.validate()) {
+                  context.read<RegisterCubit>().register(
+                        RegistrationModel(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          name: _nameController.text,
+                        ),
+                      );
+                }
+              },
+        child: state is RegisterLoading
+            ? const CircularProgressIndicator()
+            : const Text('Register'),
       ),
     );
   }
@@ -80,16 +178,6 @@ class RegisterScreen extends StatelessWidget {
           fontSize: 32.sp,
           fontWeight: FontWeight.bold,
         ),
-      ),
-    );
-  }
-
-  SizedBox _registerButtton() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: () {},
-        child: Text('Register'),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/auth/forget_password/presentation/screen/email_sent_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});

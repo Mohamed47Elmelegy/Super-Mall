@@ -22,9 +22,7 @@ class SocialMediaRegisterButton extends StatelessWidget {
           padding:
               WidgetStateProperty.all(EdgeInsets.symmetric(vertical: 11.h)),
         ),
-        onPressed: () {
-          
-        },
+        onPressed: () {},
         child: Stack(
           children: [
             Padding(
