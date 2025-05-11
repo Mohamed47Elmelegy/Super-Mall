@@ -10,6 +10,8 @@ import 'package:super_mall/features/auth/register/logic/cubit/register_cubit.dar
 import 'package:super_mall/features/auth/login/data/repository/login_repository.dart';
 import 'package:super_mall/features/auth/register/data/repository/register_repository.dart';
 
+import 'features/home/presentation/screen/home_screen.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -43,7 +45,7 @@ class MainApp extends StatelessWidget {
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: getThemeDataLight(),
-            home: SplashScreen(),
+            home: const SplashScreen(),
           ),
         );
       },

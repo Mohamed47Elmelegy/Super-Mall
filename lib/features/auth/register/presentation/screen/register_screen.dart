@@ -24,12 +24,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -65,6 +67,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _usernameField(),
                     SizedBox(height: 11.h),
                     _emailField(),
+                    SizedBox(height: 11.h),
+                    _phoneField(),
                     SizedBox(height: 11.h),
                     _passwordField(),
                     SizedBox(height: 30.h),
@@ -122,6 +126,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  TextFormField _phoneField() {
+    return TextFormField(
+      controller: _phoneController,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+        hintText: 'Phone Number',
+        hintStyle: TextStyle(
+          color: AppColorLight.grey2,
+          fontSize: 16.sp,
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your phone number';
+        }
+        // Basic phone number validation (you can adjust the regex based on your requirements)
+        if (!RegExp(r'^\+?[\d\s-]{10,}$').hasMatch(value)) {
+          return 'Please enter a valid phone number';
+        }
+        return null;
+      },
+    );
+  }
+
   TextFormField _passwordField() {
     return TextFormField(
       controller: _passwordController,
@@ -155,9 +183,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 if (_formKey.currentState!.validate()) {
                   context.read<RegisterCubit>().register(
                         RegistrationModel(
+                          confirmPassword: _passwordController.text,
                           email: _emailController.text,
                           password: _passwordController.text,
                           name: _nameController.text,
+                          phone: _phoneController.text,
                         ),
                       );
                 }

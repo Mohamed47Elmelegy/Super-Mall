@@ -1,8 +1,15 @@
+import 'package:dio/dio.dart';
+
 class ApiException implements Exception {
   final String? message;
   final int? statusCode;
+  final Response? response;
 
-  ApiException({this.message, this.statusCode});
+  ApiException({
+    this.message,
+    this.statusCode,
+    this.response,
+  });
 
   @override
   String toString() => message ?? 'Unknown error occurred';
@@ -17,24 +24,28 @@ class TimeoutException extends ApiException {
 }
 
 class BadRequestException extends ApiException {
-  BadRequestException([String? message])
-      : super(message: message ?? 'Bad request');
+  BadRequestException([String? message, Response? response])
+      : super(message: message ?? 'Bad request', response: response);
 }
 
 class UnauthorizedException extends ApiException {
-  UnauthorizedException() : super(message: 'Unauthorized');
+  UnauthorizedException([Response? response])
+      : super(message: 'Unauthorized', response: response);
 }
 
 class ForbiddenException extends ApiException {
-  ForbiddenException() : super(message: 'Forbidden');
+  ForbiddenException([Response? response])
+      : super(message: 'Forbidden', response: response);
 }
 
 class NotFoundException extends ApiException {
-  NotFoundException() : super(message: 'Not found');
+  NotFoundException([Response? response])
+      : super(message: 'Not found', response: response);
 }
 
 class ServerException extends ApiException {
-  ServerException() : super(message: 'Server error');
+  ServerException([Response? response])
+      : super(message: 'Server error', response: response);
 }
 
 class RequestCancelledException extends ApiException {
@@ -42,5 +53,6 @@ class RequestCancelledException extends ApiException {
 }
 
 class UnknownException extends ApiException {
-  UnknownException() : super(message: 'Unknown error occurred');
+  UnknownException([Response? response])
+      : super(message: 'Unknown error occurred', response: response);
 }

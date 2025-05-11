@@ -16,6 +16,7 @@ class UserLoginModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'action': 'login',
       'email': email,
       'password': password,
     };

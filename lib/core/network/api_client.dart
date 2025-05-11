@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'api_constants.dart';
 import 'api_exceptions.dart';
@@ -15,24 +17,11 @@ class ApiClient {
       ),
     );
 
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // يمكنك إضافة token هنا
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          return handler.next(response);
-        },
-        onError: (DioException e, handler) {
-          final error = _handleError(e);
-          if (error is DioException) {
-            return handler.next(error);
-          }
-          return handler.reject(e);
-        },
-      ),
-    );
+    _dio.interceptors.addAll([
+      _LoggingInterceptor(),
+      _ErrorInterceptor(),
+      _AuthInterceptor(),
+    ]);
   }
 
   Future<Response> get(
@@ -129,17 +118,140 @@ class ApiClient {
 
     switch (response.statusCode) {
       case 400:
-        return BadRequestException(response.data['message']);
+        return BadRequestException(response.data['message'], response);
       case 401:
-        return UnauthorizedException();
+        return UnauthorizedException(response);
       case 403:
-        return ForbiddenException();
+        return ForbiddenException(response);
       case 404:
-        return NotFoundException();
+        return NotFoundException(response);
       case 500:
-        return ServerException();
+        return ServerException(response);
       default:
-        return UnknownException();
+        return UnknownException(response);
     }
+  }
+}
+
+class _LoggingInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    log(
+        '┌------------------------------------------------------------------------------');
+    log('| Request: ${options.method} ${options.uri}');
+    log('| Headers:');
+    options.headers.forEach((key, value) {
+      log('| \t$key: $value');
+    });
+    log('| Body: ${options.data}');
+    log(
+        '└------------------------------------------------------------------------------');
+    super.onRequest(options, handler);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    log(
+        '┌------------------------------------------------------------------------------');
+    log('| Response [${response.statusCode}] ${response.requestOptions.uri}');
+    log('| Headers:');
+    response.headers.forEach((key, values) {
+      log('| \t$key: ${values.join(',')}');
+    });
+    log('| Body: ${response.data}');
+    log(
+        '└------------------------------------------------------------------------------');
+    super.onResponse(response, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    log(
+        '┌------------------------------------------------------------------------------');
+    log('| Error: ${err.type}');
+    log('| ${err.requestOptions.method} ${err.requestOptions.uri}');
+    log('| Status Code: ${err.response?.statusCode}');
+    log('| Message: ${err.message}');
+    log('| Response: ${err.response?.data}');
+    log(
+        '└------------------------------------------------------------------------------');
+    super.onError(err, handler);
+  }
+}
+
+class _ErrorInterceptor extends Interceptor {
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    switch (err.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return handler.reject(DioException(
+          requestOptions: err.requestOptions,
+          error: TimeoutException(),
+          type: DioExceptionType.connectionTimeout,
+        ));
+      case DioExceptionType.badResponse:
+        final customError = _handleResponseError(err.response);
+        return handler.reject(DioException(
+          requestOptions: err.requestOptions,
+          error: customError,
+          response: err.response,
+          type: DioExceptionType.badResponse,
+        ));
+      case DioExceptionType.cancel:
+        return handler.reject(DioException(
+          requestOptions: err.requestOptions,
+          error: RequestCancelledException(),
+          type: DioExceptionType.cancel,
+        ));
+      default:
+        return handler.reject(DioException(
+          requestOptions: err.requestOptions,
+          error: NetworkException(),
+          type: DioExceptionType.unknown,
+        ));
+    }
+  }
+
+  Exception _handleResponseError(Response? response) {
+    if (response == null) return UnknownException();
+
+    switch (response.statusCode) {
+      case 400:
+        return BadRequestException(response.data['message'], response);
+      case 401:
+        return UnauthorizedException(response);
+      case 403:
+        return ForbiddenException(response);
+      case 404:
+        return NotFoundException(response);
+      case 500:
+        return ServerException(response);
+      default:
+        return UnknownException(response);
+    }
+  }
+}
+
+class _AuthInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    // Add auth token if available
+    // final token = await _getToken();
+    // if (token != null) {
+    //   options.headers['Authorization'] = 'Bearer $token';
+    // }
+    super.onRequest(options, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (err.response?.statusCode == 401) {
+      // Handle token refresh or logout
+      // await _refreshToken();
+      // return handler.resolve(await _retry(err.requestOptions));
+    }
+    super.onError(err, handler);
   }
 }
