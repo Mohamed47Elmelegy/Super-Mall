@@ -4,6 +4,9 @@ class ApiConstants {
   // Auth Endpoints
   static const String login = '/auth';
   static const String register = '/auth';
+  static const String products = '/products';
+  static const String categories = '/categories';
+  static const String brands = '/brands';
   static const String googleLogin = '/auth/google';
   static const String googleRegister = '/auth/google/register';
   static const String facebookLogin = '/auth/facebook';

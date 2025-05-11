@@ -6,7 +6,7 @@ import 'package:super_mall/features/auth/forget_password/presentation/screen/for
 import 'package:super_mall/features/auth/register/data/model/register.dart';
 import 'package:super_mall/features/auth/register/logic/cubit/register_cubit.dart';
 import 'package:super_mall/features/auth/register/logic/cubit/register_state.dart';
-import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
+import 'package:super_mall/features/auth/login/presentation/screen/login_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 
 import '../../../../../service_locator.dart';
@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } else if (state is RegisterLoaded) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
             );
           }
         },

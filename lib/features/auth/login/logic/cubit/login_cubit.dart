@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dartz/dartz.dart';
+import 'dart:developer' as developer;
 import 'package:super_mall/features/auth/login/data/model/login.dart';
 import 'package:super_mall/features/auth/login/data/repository/login_repository.dart';
 import 'login_state.dart';
@@ -12,12 +12,22 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> login(UserLoginModel loginData) async {
     try {
       emit(LoginLoading());
+      developer.log('Login request data: ${loginData.toJson()}');
+
       final result = await _repository.login(loginData);
+
       result.fold(
-        (failure) => emit(LoginError(message: failure.message)),
-        (success) => emit(LoginLoaded()),
+        (failure) {
+          developer.log('Login failed: ${failure.message}');
+          emit(LoginError(message: failure.message));
+        },
+        (success) {
+          developer.log('Login successful: ${success.token}');
+          emit(LoginSucces(response: success));
+        },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log('Login error: $e\n$stackTrace');
       emit(LoginError(message: e.toString()));
     }
   }
@@ -30,7 +40,7 @@ class LoginCubit extends Cubit<LoginState> {
 
       result.fold(
         (failure) => emit(LoginError(message: failure.message)),
-        (success) => emit(LoginLoaded()),
+        (success) => emit(LoginSucces(response: LoginResponseModel())),
       );
     } catch (e) {
       emit(LoginError(message: e.toString()));
@@ -45,7 +55,7 @@ class LoginCubit extends Cubit<LoginState> {
 
       result.fold(
         (failure) => emit(LoginError(message: failure.message)),
-        (success) => emit(LoginLoaded()),
+        (success) => emit(LoginSucces(response: LoginResponseModel())),
       );
     } catch (e) {
       emit(LoginError(message: e.toString()));
@@ -60,7 +70,7 @@ class LoginCubit extends Cubit<LoginState> {
 
       result.fold(
         (failure) => emit(LoginError(message: failure.message)),
-        (success) => emit(LoginLoaded()),
+        (_) => emit(LoginSucces(response: LoginResponseModel())),
       );
     } catch (e) {
       emit(LoginError(message: e.toString()));

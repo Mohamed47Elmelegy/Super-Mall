@@ -136,45 +136,39 @@ class ApiClient {
 class _LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    log(
-        '┌------------------------------------------------------------------------------');
+    log('┌------------------------------------------------------------------------------');
     log('| Request: ${options.method} ${options.uri}');
     log('| Headers:');
     options.headers.forEach((key, value) {
       log('| \t$key: $value');
     });
     log('| Body: ${options.data}');
-    log(
-        '└------------------------------------------------------------------------------');
+    log('└------------------------------------------------------------------------------');
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    log(
-        '┌------------------------------------------------------------------------------');
+    log('┌------------------------------------------------------------------------------');
     log('| Response [${response.statusCode}] ${response.requestOptions.uri}');
     log('| Headers:');
     response.headers.forEach((key, values) {
       log('| \t$key: ${values.join(',')}');
     });
     log('| Body: ${response.data}');
-    log(
-        '└------------------------------------------------------------------------------');
+    log('└------------------------------------------------------------------------------');
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    log(
-        '┌------------------------------------------------------------------------------');
+    log('┌------------------------------------------------------------------------------');
     log('| Error: ${err.type}');
     log('| ${err.requestOptions.method} ${err.requestOptions.uri}');
     log('| Status Code: ${err.response?.statusCode}');
     log('| Message: ${err.message}');
     log('| Response: ${err.response?.data}');
-    log(
-        '└------------------------------------------------------------------------------');
+    log('└------------------------------------------------------------------------------');
     super.onError(err, handler);
   }
 }

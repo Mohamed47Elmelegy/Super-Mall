@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
+import 'package:super_mall/features/home/presentation/cubit/home_cubit.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/category_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/gridview_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
+
+import '../cubit/home_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,25 +48,43 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (context.read<HomeCubit>().state is! HomeLoaded) {
+      context.read<HomeCubit>().getHomeData();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBarPrimary(
-        currentIndex: 1,
-        onTap: (p0) {},
-      ),
-      appBar: HomeAppbar(),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenPadding),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _searchField(),
-              // SearchNoResults(),
-              isStatic ? _buildDefaultContent(context) : _buildSearchResults(),
-            ],
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        return Scaffold(
+          bottomNavigationBar: BottomNavigationBarPrimary(
+            currentIndex: 0,
+            onTap: (p0) {},
           ),
-        ),
-      ),
+          appBar: HomeAppbar(),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenPadding),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _searchField(),
+                  if (state is HomeLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else if (state is HomeError)
+                    Center(child: Text(state.message))
+                  else if (state is HomeLoaded)
+                    _buildDefaultContent(context)
+                  else
+                    _buildDefaultContent(context),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

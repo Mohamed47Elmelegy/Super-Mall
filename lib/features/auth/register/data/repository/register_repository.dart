@@ -9,7 +9,7 @@ import 'package:super_mall/core/network/network_info.dart';
 import 'package:super_mall/features/auth/register/data/model/register.dart';
 
 abstract class RegisterRepositoryBase {
-  Future<Either<Failure, RegistrationModel>> register(
+  Future<Either<Failure, RegisterResponseModel>> register(
       RegistrationModel registerData);
   Future<Either<Failure, void>> registerWithGoogle();
   Future<Either<Failure, void>> registerWithFacebook();
@@ -26,7 +26,7 @@ class RegisterRepository implements RegisterRepositoryBase {
         _networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, RegistrationModel>> register(
+  Future<Either<Failure, RegisterResponseModel>> register(
       RegistrationModel registerData) async {
     if (!await _networkInfo.isConnected) {
       log('=== Network Error: No Internet Connection ===');
@@ -55,7 +55,7 @@ class RegisterRepository implements RegisterRepositoryBase {
         return Left(ServerFailure(message: 'Server returned null response'));
       }
 
-      return Right(RegistrationModel.fromJson(response.data));
+      return Right(RegisterResponseModel.fromJson(response.data));
     } on ApiException catch (e) {
       log('=== Register Error Data ===');
       log('Error Message: ${e.message}');

@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+// Request Model
 class RegistrationModel {
   final String email;
   final String password;
- final  String confirmPassword;
+  final String confirmPassword;
   final String name;
   final String phone;
 
@@ -23,8 +24,6 @@ class RegistrationModel {
       name: json['name'] as String,
       phone: json['phone'] as String,
       confirmPassword: json['password_confirmation'] as String,
-
-
     );
   }
 
@@ -58,22 +57,21 @@ class RegistrationModel {
   @override
   bool operator ==(covariant RegistrationModel other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.email == email &&
-      other.password == password &&
-      other.confirmPassword == confirmPassword &&
-      other.name == name &&
-      other.phone == phone;
+
+    return other.email == email &&
+        other.password == password &&
+        other.confirmPassword == confirmPassword &&
+        other.name == name &&
+        other.phone == phone;
   }
 
   @override
   int get hashCode {
     return email.hashCode ^
-      password.hashCode ^
-      confirmPassword.hashCode ^
-      name.hashCode ^
-      phone.hashCode;
+        password.hashCode ^
+        confirmPassword.hashCode ^
+        name.hashCode ^
+        phone.hashCode;
   }
 
   @override
@@ -100,6 +98,25 @@ class RegistrationModel {
       phone: map['phone'] as String,
     );
   }
+}
 
- 
+// Response Model
+class RegisterResponseModel {
+  final String status;
+  final String message;
+  final String? token;
+
+  const RegisterResponseModel({
+    required this.status,
+    required this.message,
+    this.token,
+  });
+
+  factory RegisterResponseModel.fromJson(Map<String, dynamic> json) {
+    return RegisterResponseModel(
+      status: json['status'] as String,
+      message: json['message'] as String,
+      token: json['token'] as String?,
+    );
+  }
 }

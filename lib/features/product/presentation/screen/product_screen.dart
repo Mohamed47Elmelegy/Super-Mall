@@ -4,17 +4,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
-import 'package:super_mall/shared/widget/button_primary.dart';
 
 class ProductScreen extends StatelessWidget {
+  final String title;
+  final double price;
+  final String imagePath;
+
   const ProductScreen({
     super.key,
+    required this.title,
+    required this.price,
+    required this.imagePath,
   });
 
   @override
   Widget build(BuildContext context) {
     final List<String> images = [
-      'assets/images/example1.png',
+      imagePath,
       'assets/images/example12.png',
       'assets/images/example123.png',
     ];
@@ -54,9 +60,9 @@ class ProductScreen extends StatelessWidget {
                 }).toList(),
               ),
               SizedBox(height: 20.h),
-              Text('Men\'s Harrington Jacket'),
+              Text(title),
               SizedBox(height: 10.h),
-              Text('EGP700'),
+              Text('EGP$price'),
               SizedBox(height: 20.h),
               _buildSizeSelector(),
               SizedBox(height: 10.h),

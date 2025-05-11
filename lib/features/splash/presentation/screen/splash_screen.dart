@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/features/auth/login/presentation/screen/login_screen.dart';
+import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
 import 'package:super_mall/features/splash/logic/cubit/splash_cubit.dart';
 import 'package:super_mall/features/splash/logic/cubit/splash_state.dart';
 
@@ -27,18 +30,27 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   @override
   void initState() {
     super.initState();
-    _navigateToSignIn();
+    _checkAuthAndNavigate();
   }
 
-  _navigateToSignIn() async {
-    await Future.delayed(const Duration(seconds: 3), () {});
+  Future<void> _checkAuthAndNavigate() async {
+    // Wait for splash screen animation
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    // Check if user is logged in
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-      );
+      if (token != null && token.isNotEmpty) {
+        // User is logged in, navigate to home
+        Navigator.pushReplacementNamed(context, PageRoutesName.home);
+      } else {
+        // User is not logged in, navigate to login
+        Navigator.pushReplacementNamed(context, PageRoutesName.login);
+      }
     }
   }
 

@@ -7,7 +7,7 @@ import 'package:super_mall/features/auth/login/data/model/login.dart';
 import 'package:super_mall/core/network/api_exceptions.dart';
 
 abstract class LoginRepositoryBase {
-  Future<Either<Failure, UserLoginModel>> login(UserLoginModel loginData);
+  Future<Either<Failure, LoginResponseModel>> login(UserLoginModel loginData);
   Future<Either<Failure, void>> loginWithGoogle();
   Future<Either<Failure, void>> loginWithFacebook();
   Future<Either<Failure, void>> resetPassword(String email);
@@ -24,7 +24,7 @@ class LoginRepository implements LoginRepositoryBase {
         _networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, UserLoginModel>> login(
+  Future<Either<Failure, LoginResponseModel>> login(
       UserLoginModel loginData) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure(message: 'No internet connection'));
@@ -35,7 +35,16 @@ class LoginRepository implements LoginRepositoryBase {
         ApiConstants.login,
         data: loginData.toJson(),
       );
-      return Right(UserLoginModel.fromJson(response.data));
+
+      final loginResponse = LoginResponseModel.fromJson(response.data);
+
+      if (loginResponse.status == 'success' && loginResponse.token != null) {
+        return Right(loginResponse);
+      } else {
+        return Left(ServerFailure(
+          message: loginResponse.message ?? 'Login failed',
+        ));
+      }
     } on ApiException catch (e) {
       return Left(ServerFailure(message: e.message ?? 'Unknown error'));
     }

@@ -21,7 +21,15 @@ class Item extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ProductScreen()));
+          context, 
+          MaterialPageRoute(
+            builder: (context) => ProductScreen(
+              title: title,
+              price: price,
+              imagePath: path,
+            )
+          )
+        );
       },
       child: Card(
         child: Container(

@@ -5,6 +5,7 @@ import 'core/network/network_info.dart';
 import 'features/auth/login/data/repository/login_repository.dart';
 import 'features/auth/register/data/repository/register_repository.dart';
 import 'features/auth/forget_password/data/repository/forget_password_repository.dart';
+import 'features/home/data/repository/home_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -41,5 +42,10 @@ void _setupRepositories() {
       apiClient: getIt<ApiClient>(),
       networkInfo: getIt<NetworkInfo>(),
     ),
+  );
+
+  // Home
+  getIt.registerLazySingleton<HomeRepositoryBase>(
+    () => HomeRepository(),
   );
 }
