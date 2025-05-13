@@ -1,0 +1,2 @@
+D:/Route/Super-Mall/Super-Mall/android/app/.cxx/RelWithDebInfo/215o5y93/x86_64/CMakeFiles/edit_cache.dir
+D:/Route/Super-Mall/Super-Mall/android/app/.cxx/RelWithDebInfo/215o5y93/x86_64/CMakeFiles/rebuild_cache.dir
