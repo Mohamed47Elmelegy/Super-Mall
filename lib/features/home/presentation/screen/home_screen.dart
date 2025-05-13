@@ -3,15 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
-import 'package:super_mall/features/home/presentation/cubit/home_cubit.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/category_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
-import 'package:super_mall/shared/widget/gridview_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
-
-import '../cubit/home_state.dart';
+import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
+import 'package:super_mall/features/product/data/model/product.dart';
+import '../../../../core/routes/page_routes_name.dart';
+import '../../../product/logic/cubit/product_state.dart';
+import '../../data/model/category.dart';
+import '../cubit/category_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,40 +26,23 @@ class _HomeScreenState extends State<HomeScreen> {
   double screenPadding = 20.w;
   TextEditingController searchController = TextEditingController();
   bool isStatic = true;
-  List<Item> items = [
-    Item(
-      path: 'assets/images/search_result1.png',
-      price: 800,
-      title: 'Club Fleece Mens Jacket',
-    ),
-    Item(
-      path: 'assets/images/search_result2.png',
-      price: 800,
-      title: 'Skate Jacket',
-    ),
-    Item(
-      path: 'assets/images/search_result3.png',
-      price: 800,
-      title: 'Therma Fit Puffer Jacket',
-    ),
-    Item(
-      path: 'assets/images/search_result4.png',
-      price: 800,
-      title: 'Men\'s Workwear Jacket',
-    ),
-  ];
 
   @override
   void initState() {
     super.initState();
-    if (context.read<HomeCubit>().state is! HomeLoaded) {
-      context.read<HomeCubit>().getHomeData();
-    }
+    // جلب المنتجات عند فتح الصفحة
+    context.read<ProductCubit>().getProducts();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
+    return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
         return Scaffold(
           bottomNavigationBar: BottomNavigationBarPrimary(
@@ -71,14 +56,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   _searchField(),
-                  if (state is HomeLoading)
+                  if (state is ProductLoading)
                     const Center(child: CircularProgressIndicator())
-                  else if (state is HomeError)
+                  else if (state is ProductError)
                     Center(child: Text(state.message))
-                  else if (state is HomeLoaded)
-                    _buildDefaultContent(context)
+                  else if (state is ProductLoaded)
+                    _buildDefaultContent(context, state.products)
                   else
-                    _buildDefaultContent(context),
+                    const SizedBox(),
                 ],
               ),
             ),
@@ -88,131 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSearchResults() {
-    return Padding(
-      padding: EdgeInsets.only(top: 10.h),
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _filterItem(
-                    text: 3.toString(), icon: Icon(Icons.filter_alt_sharp)),
-                SizedBox(width: 3.w),
-                _filterItem(
-                    text: 'Deals',
-                    icon: Icon(Icons.keyboard_arrow_down_rounded)),
-                SizedBox(width: 3.w),
-                _filterItem(
-                    text: 'Price',
-                    icon: Icon(Icons.keyboard_arrow_down_rounded)),
-                SizedBox(width: 3.w),
-                _filterItem(
-                    text: 'Sort by',
-                    icon: Icon(Icons.keyboard_arrow_down_rounded)),
-                SizedBox(width: 3.w),
-                _filterItem(
-                    text: 'Gender',
-                    icon: Icon(Icons.keyboard_arrow_down_rounded)),
-              ],
-            ),
-          ),
-          SizedBox(height: 15.h),
-          Align(
-              alignment: Alignment.centerLeft, child: Text('53 Results Found')),
-          SizedBox(height: 15.h),
-          GridViewPrimary(items: items, childAspectRatio: 0.65),
-        ],
-      ),
-    );
-  }
+  Widget _buildDefaultContent(BuildContext context, List<Product> products) {
+    // فلترة المنتجات حسب القسم
+    final topSelling = products.where((p) => p.isBest).toList();
+    final newIn = products.where((p) => p.isNew).toList();
 
-  Widget _filterItem({String? text, required Widget icon}) {
-    return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return Container(
-              height: (MediaQuery.of(context).size.height / 2),
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Clear'),
-                        Text(
-                          'Sort by',
-                          style: TextStyle(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.close)),
-                      ],
-                    ),
-                    SizedBox(height: 10.h),
-                    _buildFilterCriteriaItem(
-                        title: 'Recommended', context, isActive: true),
-                    SizedBox(height: 10.h),
-                    _buildFilterCriteriaItem(title: 'Newest', context),
-                    SizedBox(height: 10.h),
-                    _buildFilterCriteriaItem(
-                        title: 'Lowest - Heighest Price', context),
-                    SizedBox(height: 10.h),
-                    _buildFilterCriteriaItem(
-                        title: 'Heighest - Lowest Price', context),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.r),
-          color: AppColorLight.grey1,
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
-        child: Row(
-          children: [
-            if (text != null) Text(text),
-            icon,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container _buildFilterCriteriaItem(BuildContext context,
-      {required String title, bool isActive = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.h),
-      decoration: BoxDecoration(
-        color: isActive ? Theme.of(context).primaryColor : AppColorLight.grey1,
-        borderRadius: BorderRadius.circular(50.r),
-      ),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16.sp,
-            ),
-          ),
-          Spacer(),
-          if (isActive) Icon(Icons.check)
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDefaultContent(BuildContext context) {
     return Column(
       children: [
         SizedBox(height: 20.h),
@@ -228,22 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: [
-              Item(
-                  path: 'assets/images/example1.png',
-                  title: 'Men\'s Harrington Jacket',
-                  price: 750),
-              SizedBox(width: 10.w),
-              Item(
-                  path: 'assets/images/example2.png',
-                  title: 'Max Cirro Men\'s Slides',
-                  price: 850),
-              SizedBox(width: 10.w),
-              Item(
-                  path: 'assets/images/example3.png',
-                  title: 'Men\'s Harrington Jacket',
-                  price: 750),
-            ],
+            children:
+                topSelling.map((product) => Item(product: product)).toList(),
           ),
         ),
         SizedBox(height: 20.h),
@@ -252,22 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: [
-              Item(
-                  path: 'assets/images/example4.png',
-                  title: 'Men\'s Harrington Jacket',
-                  price: 750),
-              SizedBox(width: 10.w),
-              Item(
-                  path: 'assets/images/example5.png',
-                  title: 'Men\'s Harrington Jacket',
-                  price: 750),
-              SizedBox(width: 10.w),
-              Item(
-                  path: 'assets/images/example6.png',
-                  title: 'Men\'s Harrington Jacket',
-                  price: 750),
-            ],
+            children: newIn.map((product) => Item(product: product)).toList(),
           ),
         ),
       ],
@@ -371,15 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: TextField(
             controller: searchController,
             onChanged: (value) {
-              if (value.isNotEmpty) {
-                setState(() {
-                  isStatic = false;
-                });
-              } else {
-                setState(() {
-                  isStatic = true;
-                });
-              }
+              setState(() {
+                isStatic = value.isEmpty;
+              });
             },
             decoration: InputDecoration(
               contentPadding: EdgeInsets.all(0),
@@ -414,6 +244,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  // مثال على استخدام Wrap بدلاً من Row للفلاتر (لو عندك فلاتر كثيرة):
+  Widget _filtersBar(List<String> filters) {
+    return Wrap(
+      spacing: 8.0,
+      children: filters
+          .map((filter) => Chip(
+                label: Text(filter),
+              ))
+          .toList(),
     );
   }
 }

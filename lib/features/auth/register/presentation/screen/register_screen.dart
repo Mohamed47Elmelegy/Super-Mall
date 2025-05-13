@@ -6,11 +6,9 @@ import 'package:super_mall/features/auth/forget_password/presentation/screen/for
 import 'package:super_mall/features/auth/register/data/model/register.dart';
 import 'package:super_mall/features/auth/register/logic/cubit/register_cubit.dart';
 import 'package:super_mall/features/auth/register/logic/cubit/register_state.dart';
-import 'package:super_mall/features/auth/login/presentation/screen/login_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
-
-import '../../../../../service_locator.dart';
-import '../../data/repository/register_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../../core/routes/page_routes_name.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -37,51 +35,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => RegisterCubit(getIt<RegisterRepositoryBase>()),
-      child: BlocConsumer<RegisterCubit, RegisterState>(
-        listener: (context, state) {
-          if (state is RegisterError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is RegisterLoaded) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
+    return BlocConsumer<RegisterCubit, RegisterState>(
+      listener: (context, state) async {
+        if (state is RegisterError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        } else if (state is RegisterLoaded) {
+          final token = state.response.token;
+          if (token != null) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', token);
           }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppbarBackTitle(isBackable: true),
-            body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20.h),
-                    _screenTitle(),
-                    SizedBox(height: 20.h),
-                    _usernameField(),
-                    SizedBox(height: 11.h),
-                    _emailField(),
-                    SizedBox(height: 11.h),
-                    _phoneField(),
-                    SizedBox(height: 11.h),
-                    _passwordField(),
-                    SizedBox(height: 30.h),
-                    _registerButton(state),
-                    SizedBox(height: 30.h),
-                    _forgetPasswordClickable(context),
-                  ],
-                ),
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, PageRoutesName.home);
+          }
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppbarBackTitle(isBackable: true),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  SizedBox(height: 20.h),
+                  _screenTitle(),
+                  SizedBox(height: 20.h),
+                  _usernameField(),
+                  SizedBox(height: 11.h),
+                  _emailField(),
+                  SizedBox(height: 11.h),
+                  _phoneField(),
+                  SizedBox(height: 11.h),
+                  _passwordField(),
+                  SizedBox(height: 30.h),
+                  _registerButton(state),
+                  SizedBox(height: 30.h),
+                  _forgetPasswordClickable(context),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -193,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
               },
         child: state is RegisterLoading
-            ? const CircularProgressIndicator()
+            ? const CircularProgressIndicator(color: Colors.white)
             : const Text('Register'),
       ),
     );

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'api_constants.dart';
 import 'api_exceptions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   late final Dio _dio;
@@ -230,22 +231,23 @@ class _ErrorInterceptor extends Interceptor {
 
 class _AuthInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Add auth token if available
-    // final token = await _getToken();
-    // if (token != null) {
-    //   options.headers['Authorization'] = 'Bearer $token';
-    // }
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
     super.onRequest(options, handler);
   }
 
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401) {
-      // Handle token refresh or logout
-      // await _refreshToken();
-      // return handler.resolve(await _retry(err.requestOptions));
-    }
-    super.onError(err, handler);
-  }
+  // @override
+  // void onError(DioException err, ErrorInterceptorHandler handler) async {
+  //   if (err.response?.statusCode == 401) {
+  //     // Handle token refresh or logout
+  //     await _refreshToken();
+  //     return handler.resolve(await _retry(err.requestOptions));
+  //   }
+  //   super.onError(err, handler);
+  // }
 }

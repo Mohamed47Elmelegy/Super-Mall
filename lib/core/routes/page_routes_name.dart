@@ -11,4 +11,6 @@ class PageRoutesName {
   static const orders = "/orders";
   static const profile = "/profile";
   static const search = "/search";
+  static const productDetails = "/product-details";
+  static const product = "/product";
 }

@@ -11,9 +11,6 @@ import 'package:super_mall/features/auth/login/logic/cubit/login_state.dart';
 import 'package:super_mall/features/auth/login/presentation/widget/social_media_register_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/features/auth/register/presentation/screen/register_screen.dart';
-import 'package:super_mall/service_locator.dart';
-
-import '../../data/repository/login_repository.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

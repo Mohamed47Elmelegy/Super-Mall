@@ -4,26 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
+import '../../data/model/product.dart';
 
 class ProductScreen extends StatelessWidget {
-  final String title;
-  final double price;
-  final String imagePath;
+  final Product product;
 
   const ProductScreen({
     super.key,
-    required this.title,
-    required this.price,
-    required this.imagePath,
+    required this.product,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<String> images = [
-      imagePath,
-      'assets/images/example12.png',
-      'assets/images/example123.png',
-    ];
+    final List<String> images =
+        product.gallery.isNotEmpty ? product.gallery : [product.image];
 
     return Scaffold(
       appBar: AppbarBackTitle(
@@ -43,7 +37,6 @@ class ProductScreen extends StatelessWidget {
                 options: CarouselOptions(
                   height: MediaQuery.of(context).size.height * 0.35,
                   autoPlay: true,
-                  // enlargeCenterPage: true,
                 ),
                 items: images.map((i) {
                   return Builder(
@@ -52,7 +45,7 @@ class ProductScreen extends StatelessWidget {
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           margin: EdgeInsets.symmetric(horizontal: 1.0.w),
-                          child: Image.asset(i),
+                          child: Image.network(i, fit: BoxFit.cover),
                         ),
                       );
                     },
@@ -60,9 +53,25 @@ class ProductScreen extends StatelessWidget {
                 }).toList(),
               ),
               SizedBox(height: 20.h),
-              Text(title),
+              Text(product.name['en'] ?? '',
+                  style:
+                      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 10.h),
-              Text('EGP$price'),
+              Text('EGP ${product.price}',
+                  style:
+                      TextStyle(fontSize: 18.sp, color: AppColorLight.primary)),
+              SizedBox(height: 10.h),
+              Text('Brand: ${product.brand['en'] ?? ''}'),
+              Text('Category: ${product.category['en'] ?? ''}'),
+              Text('Quantity: ${product.quantity}'),
+              SizedBox(height: 20.h),
+              Text(product.description['en'] ?? '',
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
+              SizedBox(height: 20.h),
+              Text('Shipping & Returns'),
+              SizedBox(height: 10.h),
+              Text('Free standard shipping and free 60-day returns',
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
               SizedBox(height: 20.h),
               _buildSizeSelector(),
               SizedBox(height: 10.h),
@@ -72,16 +81,6 @@ class ProductScreen extends StatelessWidget {
               SizedBox(height: 10.h),
               Text(
                 'Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you plenty of room to layer underneath, while the soft corduroy keeps it casual and timeless.',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                ),
-              ),
-              SizedBox(height: 20.h),
-              Text('Shipping & Returns'),
-              SizedBox(height: 10.h),
-              Text(
-                'Free standard shipping and free 60-day returns',
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: Colors.grey[600],
@@ -98,7 +97,6 @@ class ProductScreen extends StatelessWidget {
               ),
               _reviewCard(),
               _reviewCard(),
-              // ButtonPrimary(title: 'Add to Cart'),
             ],
           ),
         ),

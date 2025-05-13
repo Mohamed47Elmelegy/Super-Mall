@@ -2,33 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
-import 'package:super_mall/features/product/presentation/screen/product_screen.dart';
+import 'package:super_mall/features/product/data/model/product.dart';
+import 'package:super_mall/core/routes/page_routes_name.dart';
 
 class Item extends StatelessWidget {
-  final String path;
-  final String title;
-  final double price;
+  final Product product;
 
   const Item({
     super.key,
-    required this.path,
-    required this.title,
-    required this.price,
+    required this.product,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context, 
-          MaterialPageRoute(
-            builder: (context) => ProductScreen(
-              title: title,
-              price: price,
-              imagePath: path,
-            )
-          )
+        Navigator.pushNamed(
+          context,
+          PageRoutesName.productDetails,
+          arguments: product,
         );
       },
       child: Card(
@@ -48,10 +40,14 @@ class Item extends StatelessWidget {
                 Stack(
                   children: [
                     SizedBox(
-                      child: Image.asset(
+                      child: Image.network(
+                        product.gallery.isNotEmpty
+                            ? product.gallery.first
+                            : product.image,
                         width: 150.w,
-                        path,
                         fit: BoxFit.fitHeight,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.broken_image, size: 150.w),
                       ),
                     ),
                     Positioned(
@@ -65,11 +61,11 @@ class Item extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h),
                 Text(
-                  title,
+                  product.name['en'] ?? '',
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 3.h),
-                Text('EGP $price'),
+                Text('EGP ${product.price}'),
               ],
             ),
           ),

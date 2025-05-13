@@ -5,6 +5,7 @@ import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/user/wishlist/presentation/screen/wishlist_list_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/item.dart';
+import 'package:super_mall/features/product/data/model/product.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -14,23 +15,43 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  final i = [
-    Item(
-        path: 'assets/images/myfavorites_1.png',
-        price: 400,
-        title: 'Nike Fuel Pack'),
-    Item(
-        path: 'assets/images/myfavorites_2.png',
-        price: 900,
-        title: 'Nike Show X Rush'),
-    Item(
-        path: 'assets/images/myfavorites_3.png',
-        price: 200,
-        title: 'Men\'s T-Shirt'),
-    Item(
-        path: 'assets/images/myfavorites_4.png',
-        price: 250,
-        title: 'Men\'s Skate T-Shirt'),
+  // مثال على منتجات وهمية، استبدلها بمنتجات حقيقية من الـ API أو من مزود الحالة
+  final List<Product> products = [
+    Product(
+      code: '1',
+      name: {'en': 'Nike Fuel Pack'},
+      category: {'en': 'Bags'},
+      brand: {'en': 'Nike'},
+      description: {'en': 'A great pack for your fuel.'},
+      image: 'https://via.placeholder.com/150',
+      gallery: ['https://via.placeholder.com/150'],
+      quantity: 10,
+      price: 400,
+      isActive: true,
+      isNew: false,
+      isFeatured: false,
+      isBest: false,
+      isHot: false,
+      createdAt: '2024-01-01',
+    ),
+    Product(
+      code: '2',
+      name: {'en': 'Nike Show X Rush'},
+      category: {'en': 'Shoes'},
+      brand: {'en': 'Nike'},
+      description: {'en': 'Show X Rush shoes.'},
+      image: 'https://via.placeholder.com/150',
+      gallery: ['https://via.placeholder.com/150'],
+      quantity: 5,
+      price: 900,
+      isActive: true,
+      isNew: false,
+      isFeatured: false,
+      isBest: false,
+      isHot: false,
+      createdAt: '2024-01-01',
+    ),
+    // أضف المزيد من المنتجات حسب الحاجة
   ];
 
   @override
@@ -45,11 +66,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
           children: [
             FavoriteListToGo(
               title: 'My Favorites',
-              description: '12 Products',
+              description: '${products.length} Products',
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return WishlistListScreen(
-                    items: i,
+                    items: products.map((product) => Item(product: product)).toList(),
                     title: 'My Favorites',
                   );
                 }));

@@ -5,7 +5,9 @@ import 'core/network/network_info.dart';
 import 'features/auth/login/data/repository/login_repository.dart';
 import 'features/auth/register/data/repository/register_repository.dart';
 import 'features/auth/forget_password/data/repository/forget_password_repository.dart';
+import 'features/home/data/repository/category_repository.dart';
 import 'features/home/data/repository/home_repository.dart';
+import 'features/product/data/repository/product.dart';
 
 final getIt = GetIt.instance;
 
@@ -47,5 +49,15 @@ void _setupRepositories() {
   // Home
   getIt.registerLazySingleton<HomeRepositoryBase>(
     () => HomeRepository(),
+  );
+
+  // Product
+  getIt.registerLazySingleton<ProductRepository>(
+    () => ProductRepository(getIt<ApiClient>()),
+  );
+
+  // Category
+  getIt.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepository(getIt<ApiClient>()),
   );
 }
