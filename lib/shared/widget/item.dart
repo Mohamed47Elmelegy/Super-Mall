@@ -34,6 +34,7 @@ class Item extends StatelessWidget {
             color: AppColorLight.grey1,
           ),
           child: SizedBox(
+            width: 150.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -11,13 +11,4 @@ class ProductRepository {
     final List data = response.data['data'];
     return data.map((json) => Product.fromJson(json)).toList();
   }
-
-  Future<List<Product>> fetchProductsByCategory(String categoryEn) async {
-    final response = await _apiClient.get(
-      ApiConstants.products,
-      queryParameters: {'category': categoryEn},
-    );
-    final List data = response.data['data'];
-    return data.map((json) => Product.fromJson(json)).toList();
-  }
 }

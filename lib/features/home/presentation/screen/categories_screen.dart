@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:super_mall/core/theme/app_color/app_color_light.dart';
-import 'package:super_mall/shared/widget/appbar_back_title.dart';
-import '../../data/model/category.dart';
+import '../../../../core/routes/page_routes_name.dart';
 import '../cubit/category_cubit.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -14,8 +11,6 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  double screenPadding = 20.w;
-
   @override
   void initState() {
     super.initState();
@@ -25,86 +20,62 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarBackTitle(),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Shop by Categories',
-              style: TextStyle(
-                fontSize: 24.sp,
-                fontWeight: FontWeight.w500,
+      appBar: AppBar(title: Text('Categories')),
+      body: BlocBuilder<CategoryCubit, CategoryState>(
+        builder: (context, state) {
+          if (state is CategoryLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is CategoryError) {
+            return Center(child: Text(state.message));
+          } else if (state is CategoryLoaded) {
+            return GridView.builder(
+              padding: EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1,
               ),
-            ),
-            SizedBox(height: 20.h),
-            Expanded(
-              child: BlocBuilder<CategoryCubit, CategoryState>(
-                builder: (context, state) {
-                  if (state is CategoryLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is CategoryError) {
-                    return Center(child: Text(state.message));
-                  } else if (state is CategoryLoaded) {
-                    return ListView.separated(
-                      itemCount: state.categories.length,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 7.h),
-                      itemBuilder: (context, index) {
-                        final category = state.categories[index];
-                        return _categoryItem(category);
-                      },
+              itemCount: state.categories.length,
+              itemBuilder: (context, index) {
+                final category = state.categories[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      PageRoutesName.category,
+                      arguments: category,
                     );
-                  }
-                  return SizedBox();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _categoryItem(Category category) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-      decoration: BoxDecoration(
-        color: AppColorLight.grey1,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          ClipOval(
-            child: category.image.isNotEmpty
-                ? Image.network(
-                    category.image,
-                    height: 45.h,
-                    width: 45.h,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 45.h,
-                      width: 45.h,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.image_not_supported, size: 24),
+                  },
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: category.image.startsWith('http')
+                              ? Image.network(
+                                  category.image,
+                                  height: 80,
+                                  width: 80,
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(Icons.category, size: 80),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          category.name['en'] ?? category.name['ar'] ?? '',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                  )
-                : Container(
-                    height: 45.h,
-                    width: 45.h,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_not_supported, size: 24),
                   ),
-          ),
-          SizedBox(width: 10.w),
-          Text(
-            category.name['en'] ?? '',
-            style: TextStyle(
-              fontSize: 15.sp,
-            ),
-          ),
-        ],
+                );
+              },
+            );
+          }
+          return SizedBox();
+        },
       ),
     );
   }

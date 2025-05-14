@@ -18,6 +18,7 @@ import 'package:super_mall/core/network/api_client.dart';
 
 import '../../features/product/data/model/product.dart';
 import '../../features/product/presentation/screen/product_screen.dart';
+import '../../features/home/data/model/category.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -44,7 +45,9 @@ class Routes {
             builder: (context) => const CategoriesScreen());
 
       case PageRoutesName.category:
-        return MaterialPageRoute(builder: (context) => const CategoryScreen());
+        final category = settings.arguments as Category;
+        return MaterialPageRoute(
+            builder: (context) => CategoryScreen(category: category));
 
       case PageRoutesName.notifications:
         return MaterialPageRoute(

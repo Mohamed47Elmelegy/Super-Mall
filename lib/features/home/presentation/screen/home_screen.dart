@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
-import 'package:super_mall/features/home/presentation/screen/category_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
@@ -30,8 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // جلب المنتجات عند فتح الصفحة
+    // جلب المنتجات والأقسام عند فتح الصفحة
     context.read<ProductCubit>().getProducts();
+    context.read<CategoryCubit>().getCategories();
   }
 
   @override
@@ -43,37 +43,43 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductCubit, ProductState>(
-      builder: (context, state) {
-        return Scaffold(
-          bottomNavigationBar: BottomNavigationBarPrimary(
-            currentIndex: 0,
-            onTap: (p0) {},
-          ),
-          appBar: HomeAppbar(),
-          body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenPadding),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _searchField(),
-                  if (state is ProductLoading)
-                    const Center(child: CircularProgressIndicator())
-                  else if (state is ProductError)
-                    Center(child: Text(state.message))
-                  else if (state is ProductLoaded)
-                    _buildDefaultContent(context, state.products)
-                  else
-                    const SizedBox(),
-                ],
+      builder: (context, productState) {
+        return BlocBuilder<CategoryCubit, CategoryState>(
+          builder: (context, categoryState) {
+            return Scaffold(
+              bottomNavigationBar: BottomNavigationBarPrimary(
+                currentIndex: 0,
+                onTap: (p0) {},
               ),
-            ),
-          ),
+              appBar: HomeAppbar(),
+              body: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenPadding),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _searchField(),
+                      if (productState is ProductLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (productState is ProductError)
+                        Center(child: Text(productState.message))
+                      else if (productState is ProductLoaded)
+                        _buildDefaultContent(
+                            context, productState.products, categoryState)
+                      else
+                        const SizedBox(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildDefaultContent(BuildContext context, List<Product> products) {
+  Widget _buildDefaultContent(BuildContext context, List<Product> products,
+      CategoryState categoryState) {
     // فلترة المنتجات حسب القسم
     final topSelling = products.where((p) => p.isBest).toList();
     final newIn = products.where((p) => p.isNew).toList();
@@ -86,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(builder: (context) => CategoriesScreen()));
         }),
         SizedBox(height: 20.h),
-        _categoriesElements(),
+        _categoriesElements(categoryState),
         SizedBox(height: 20.h),
         _itemsHeader('Top Selling', 'See All', action: () {}),
         SizedBox(height: 10.h),
@@ -138,52 +144,65 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SingleChildScrollView _categoriesElements() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _categoryElement(
-              path: 'assets/images/mobile_cat.png', title: 'Mobile'),
-          SizedBox(width: 7.w),
-          _categoryElement(
-              path: 'assets/images/cosmetics_cat.png', title: 'Cosmetics'),
-          SizedBox(width: 7.w),
-          _categoryElement(
-              path: 'assets/images/furniture_cat.png', title: 'Furniture'),
-          SizedBox(width: 7.w),
-          _categoryElement(
-              path: 'assets/images/watch_cat.png', title: 'Watches'),
-          SizedBox(width: 7.w),
-          _categoryElement(
-              path: 'assets/images/fashion_cat.png', title: 'Fashion'),
-        ],
-      ),
-    );
+  Widget _categoriesElements(CategoryState categoryState) {
+    if (categoryState is CategoryLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (categoryState is CategoryError) {
+      return Center(child: Text(categoryState.message));
+    } else if (categoryState is CategoryLoaded) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: categoryState.categories.map((category) {
+            return Padding(
+              padding: EdgeInsets.only(right: 7.w),
+              child: _categoryElement(
+                path: category.image,
+                title: category.name['en'] ?? category.name['ar'] ?? '',
+                category: category,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+    return const SizedBox(); // fallback
   }
 
-  Widget _categoryElement({required String path, required String title}) {
+  Widget _categoryElement(
+      {required String path, required String title, Category? category}) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => CategoryScreen()));
+        if (category != null) {
+          Navigator.pushNamed(context, PageRoutesName.category,
+              arguments: category);
+        }
       },
       child: Column(
         children: [
           ClipOval(
-            child: Image.asset(
-              path,
-              fit: BoxFit.cover,
-              height: MediaQuery.of(context).size.width / 5.w,
-            ),
+            child: path.startsWith('http')
+                ? Image.network(
+                    path,
+                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.width / 5.w,
+                    width: MediaQuery.of(context).size.width / 5.w,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.category,
+                          size: MediaQuery.of(context).size.width / 5.w);
+                    },
+                  )
+                : Image.asset(
+                    path,
+                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.width / 5.w,
+                  ),
           ),
           SizedBox(height: 5.h),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12.sp,
-            ),
+            style: TextStyle(fontSize: 12.sp),
           ),
         ],
       ),

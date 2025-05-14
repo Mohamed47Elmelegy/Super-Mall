@@ -21,8 +21,17 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> getProductsByCategory(String categoryEn) async {
     emit(ProductLoading());
     try {
-      final products = await repository.fetchProductsByCategory(categoryEn);
-      emit(ProductLoaded(products));
+      // جلب كل المنتجات الأول
+      final allProducts = await repository.fetchProducts();
+
+      // فلترة المنتجات client-side
+      final filteredProducts = allProducts
+          .where((product) =>
+              product.category['en'] == categoryEn ||
+              product.category['ar'] == categoryEn)
+          .toList();
+
+      emit(ProductLoaded(filteredProducts));
     } catch (e) {
       emit(ProductError(e.toString()));
     }
