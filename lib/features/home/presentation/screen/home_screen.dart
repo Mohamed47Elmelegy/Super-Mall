@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // مهم جداً مع AutomaticKeepAliveClientMixin
+    super.build(context);
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, homeState) {
         return BlocBuilder<CategoryCubit, CategoryState>(
@@ -51,22 +51,29 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: (p0) {},
               ),
               appBar: HomeAppbar(),
-              body: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenPadding),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _searchField(),
-                      if (homeState is HomeLoading)
-                        const Center(child: CircularProgressIndicator())
-                      else if (homeState is HomeError)
-                        Center(child: Text(homeState.message))
-                      else if (homeState is HomeLoaded)
-                        _buildDefaultContent(
-                            context, homeState as HomeLoaded, categoryState)
-                      else
-                        const SizedBox(),
-                    ],
+              body: RefreshIndicator(
+                onRefresh: () async {
+                  await context.read<HomeCubit>().loadHomeData();
+                  await context.read<CategoryCubit>().getCategories();
+                },
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenPadding),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        _searchField(),
+                        if (homeState is HomeLoading)
+                          const Center(child: CircularProgressIndicator())
+                        else if (homeState is HomeError)
+                          Center(child: Text(homeState.message))
+                        else if (homeState is HomeLoaded)
+                          _buildDefaultContent(
+                              context, homeState as HomeLoaded, categoryState)
+                        else
+                          const SizedBox(),
+                      ],
+                    ),
                   ),
                 ),
               ),

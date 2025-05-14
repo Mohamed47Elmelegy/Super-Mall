@@ -33,38 +33,45 @@ class _CategoryScreenState extends State<CategoryScreen>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // مهم مع AutomaticKeepAliveClientMixin
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
             widget.category.name['en'] ?? widget.category.name['ar'] ?? ''),
       ),
-      body: BlocBuilder<ProductCubit, ProductState>(
-        builder: (context, state) {
-          if (state is ProductLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is ProductError) {
-            return Center(child: Text(state.message));
-          } else if (state is ProductLoaded) {
-            if (state.products.isEmpty) {
-              return Center(child: Text('No products found'));
-            }
-            return GridView.builder(
-              padding: EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.7,
-              ),
-              itemCount: state.products.length,
-              itemBuilder: (context, index) {
-                return Item(product: state.products[index]);
-              },
-            );
-          }
-          return SizedBox();
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await context
+              .read<ProductCubit>()
+              .getProductsByCategory(widget.category.name['en'] ?? '');
         },
+        child: BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            if (state is ProductLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is ProductError) {
+              return Center(child: Text(state.message));
+            } else if (state is ProductLoaded) {
+              if (state.products.isEmpty) {
+                return Center(child: Text('No products found'));
+              }
+              return GridView.builder(
+                padding: EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.7,
+                ),
+                itemCount: state.products.length,
+                itemBuilder: (context, index) {
+                  return Item(product: state.products[index]);
+                },
+              );
+            }
+            return SizedBox();
+          },
+        ),
       ),
     );
   }
