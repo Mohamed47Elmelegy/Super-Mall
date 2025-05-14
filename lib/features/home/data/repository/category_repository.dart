@@ -7,7 +7,7 @@ class CategoryRepository {
   final ApiClient apiClient;
   CategoryRepository(this.apiClient);
 
-  Future<List<Category>> fetchCategories() async {
+  Future<List<Category>> getCategories() async {
     final response = await apiClient.get(ApiConstants.categories);
     final List data = response.data['data'];
     return data.map((json) => Category.fromJson(json)).toList();

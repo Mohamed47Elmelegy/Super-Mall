@@ -15,18 +15,25 @@ class CategoryScreen extends StatefulWidget {
   State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoryScreenState extends State<CategoryScreen>
+    with AutomaticKeepAliveClientMixin {
+  bool _dataFetched = false;
+
   @override
   void initState() {
     super.initState();
-    // جلب المنتجات الخاصة بالقسم
-    context
-        .read<ProductCubit>()
-        .getProductsByCategory(widget.category.name['en'] ?? '');
+    // جلب المنتجات الخاصة بالقسم مرة واحدة فقط
+    if (!_dataFetched) {
+      context
+          .read<ProductCubit>()
+          .getProductsByCategory(widget.category.name['en'] ?? '');
+      _dataFetched = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // مهم مع AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -61,4 +68,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

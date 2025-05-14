@@ -1,17 +1,39 @@
+import '../../../product/data/repository/product.dart';
+import '../model/home_data_model.dart';
+import 'category_repository.dart';
+
 abstract class HomeRepositoryBase {
-  Future<Map<String, dynamic>> getHomeData();
+  Future<HomeDataModel> getHomeData();
 }
 
 class HomeRepository implements HomeRepositoryBase {
+  final ProductRepository _productRepository;
+  final CategoryRepository _categoryRepository;
+  // final BannerRepository _bannerRepository;
+
+  HomeRepository(
+    this._productRepository,
+    this._categoryRepository,
+    /*this._bannerRepository*/
+  );
+
   @override
-  Future<Map<String, dynamic>> getHomeData() async {
-    // TODO: Implement API call to fetch home data
-    // This is a placeholder implementation
-    return {
-      'banners': [],
-      'categories': [],
-      'featured_products': [],
-      'new_arrivals': [],
-    };
+  Future<HomeDataModel> getHomeData() async {
+    try {
+      // جمع البيانات من repositories مختلفة
+      final categories = await _categoryRepository.getCategories();
+      final topSelling = await _productRepository.getTopSellingProducts();
+      final newProducts = await _productRepository.getNewProducts();
+      // final banners = await _bannerRepository.getBanners();
+
+      return HomeDataModel(
+        categories: categories,
+        topSelling: topSelling,
+        newProducts: newProducts,
+        banners: [], // Empty list for now until banner repository is implemented
+      );
+    } catch (e) {
+      throw Exception('Failed to load home data: $e');
+    }
   }
 }

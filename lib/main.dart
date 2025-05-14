@@ -13,10 +13,9 @@ import 'package:super_mall/features/auth/login/data/repository/login_repository.
 import 'package:super_mall/features/auth/register/data/repository/register_repository.dart';
 import 'package:super_mall/features/home/data/repository/home_repository.dart';
 import 'package:super_mall/features/home/presentation/cubit/home_cubit.dart';
-
+import 'package:super_mall/features/product/data/repository/product.dart';
+import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'features/home/data/repository/category_repository.dart';
-import 'features/product/data/repository/product.dart';
-import 'features/product/logic/cubit/product_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

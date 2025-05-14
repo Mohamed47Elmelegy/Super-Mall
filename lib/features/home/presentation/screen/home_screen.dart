@@ -7,12 +7,11 @@ import 'package:super_mall/features/home/presentation/screen/categories_screen.d
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
-import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
-import 'package:super_mall/features/product/data/model/product.dart';
 import '../../../../core/routes/page_routes_name.dart';
-import '../../../product/logic/cubit/product_state.dart';
 import '../../data/model/category.dart';
 import '../cubit/category_cubit.dart';
+import '../cubit/home_cubit.dart';
+import '../cubit/home_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,29 +20,29 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   double screenPadding = 20.w;
   TextEditingController searchController = TextEditingController();
   bool isStatic = true;
+  bool _dataFetched = false;
 
   @override
   void initState() {
     super.initState();
-    // جلب المنتجات والأقسام عند فتح الصفحة
-    context.read<ProductCubit>().getProducts();
-    context.read<CategoryCubit>().getCategories();
-  }
-
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
+    // جلب البيانات مرة واحدة فقط
+    if (!_dataFetched) {
+      context.read<HomeCubit>().loadHomeData();
+      context.read<CategoryCubit>().getCategories();
+      _dataFetched = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductCubit, ProductState>(
-      builder: (context, productState) {
+    super.build(context); // مهم جداً مع AutomaticKeepAliveClientMixin
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, homeState) {
         return BlocBuilder<CategoryCubit, CategoryState>(
           builder: (context, categoryState) {
             return Scaffold(
@@ -58,13 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       _searchField(),
-                      if (productState is ProductLoading)
+                      if (homeState is HomeLoading)
                         const Center(child: CircularProgressIndicator())
-                      else if (productState is ProductError)
-                        Center(child: Text(productState.message))
-                      else if (productState is ProductLoaded)
+                      else if (homeState is HomeError)
+                        Center(child: Text(homeState.message))
+                      else if (homeState is HomeLoaded)
                         _buildDefaultContent(
-                            context, productState.products, categoryState)
+                            context, homeState as HomeLoaded, categoryState)
                       else
                         const SizedBox(),
                     ],
@@ -78,11 +77,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDefaultContent(BuildContext context, List<Product> products,
-      CategoryState categoryState) {
+  @override
+  bool get wantKeepAlive => true;
+
+  Widget _buildDefaultContent(
+      BuildContext context, HomeLoaded homeState, CategoryState categoryState) {
     // فلترة المنتجات حسب القسم
-    final topSelling = products.where((p) => p.isBest).toList();
-    final newIn = products.where((p) => p.isNew).toList();
+    final topSelling = homeState.homeData.topSelling;
+    final newIn = homeState.homeData.newProducts;
 
     return Column(
       children: [

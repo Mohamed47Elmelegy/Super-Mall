@@ -48,7 +48,10 @@ void _setupRepositories() {
 
   // Home
   getIt.registerLazySingleton<HomeRepositoryBase>(
-    () => HomeRepository(),
+    () => HomeRepository(
+      getIt<ProductRepository>(),
+      getIt<CategoryRepository>(),
+    ),
   );
 
   // Product
