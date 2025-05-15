@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
@@ -11,9 +10,11 @@ import 'package:super_mall/shared/widget/item.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../../../core/routes/page_routes_name.dart';
 import '../../data/model/category.dart';
+import '../../logic/cubit/banner_cubit.dart';
 import '../cubit/category_cubit.dart';
 import '../cubit/home_cubit.dart';
 import '../cubit/home_state.dart';
+import '../widget/banner_carousel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (!_dataFetched) {
       context.read<HomeCubit>().loadHomeData();
       context.read<CategoryCubit>().getCategories();
+      context.read<BannerCubit>().getBanners();
       _dataFetched = true;
     }
   }
@@ -64,6 +66,9 @@ class _HomeScreenState extends State<HomeScreen>
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
+                        SizedBox(height: 20.h),
+                        const BannerCarousel(),
+                        SizedBox(height: 20.h),
                         _searchField(),
                         if (homeState is HomeLoading)
                           const SkeletonHomeScreen()
@@ -71,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen>
                           Center(child: Text(homeState.message))
                         else if (homeState is HomeLoaded)
                           _buildDefaultContent(
-                              context, homeState as HomeLoaded, categoryState)
+                              context, homeState, categoryState)
                         else
                           const SizedBox(),
                       ],

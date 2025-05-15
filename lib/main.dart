@@ -6,6 +6,7 @@ import 'package:super_mall/core/routes/routes.dart';
 import 'package:super_mall/core/services/shared_preferences_sengltion.dart';
 import 'package:super_mall/core/theme/theme_data/theme_data_light.dart';
 import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
+import 'package:super_mall/features/home/data/repository/banner_repository.dart';
 import 'package:super_mall/features/home/presentation/cubit/category_cubit.dart';
 import 'package:super_mall/service_locator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,7 @@ import 'package:super_mall/features/home/presentation/cubit/home_cubit.dart';
 import 'package:super_mall/features/product/data/repository/product.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'features/home/data/repository/category_repository.dart';
+import 'features/home/logic/cubit/banner_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +64,9 @@ class MainApp extends StatelessWidget {
             ),
             BlocProvider<CartCubit>(
               create: (context) => CartCubit()..loadCart(),
+            ),
+            BlocProvider<BannerCubit>(
+              create: (context) => BannerCubit(getIt<BannerRepository>()),
             ),
           ],
           child: MaterialApp(

@@ -369,3 +369,28 @@ class SkeletonCategoryScreen extends StatelessWidget {
     );
   }
 }
+
+class SkeletonBannerCarousel extends StatelessWidget {
+  const SkeletonBannerCarousel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            margin: EdgeInsets.symmetric(horizontal: 5.w),
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

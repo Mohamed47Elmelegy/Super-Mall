@@ -15,6 +15,7 @@ class ApiConstants {
   static const String facebookRegister = '/auth/facebook/register';
   static const String forgotPassword = '/auth/forgot-password';
   static const String banners = '/banners';
+  static const String bannerslink = 'http://10.0.2.2:8000/storage/';
 
   // Headers
   static const Map<String, String> headers = {

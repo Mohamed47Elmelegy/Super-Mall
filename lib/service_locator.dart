@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:super_mall/features/home/data/repository/banner_repository.dart';
 import 'core/network/api_client.dart';
 import 'core/network/network_info.dart';
 import 'features/auth/login/data/repository/login_repository.dart';
@@ -62,5 +63,10 @@ void _setupRepositories() {
   // Category
   getIt.registerLazySingleton<CategoryRepository>(
     () => CategoryRepository(getIt<ApiClient>()),
+  );
+
+  // Banner
+  getIt.registerLazySingleton<BannerRepository>(
+    () => BannerRepository(getIt<ApiClient>()),
   );
 }
