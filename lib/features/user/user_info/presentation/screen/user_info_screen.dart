@@ -1,15 +1,46 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_mall/core/routes/page_routes_name.dart';
+import 'package:super_mall/core/services/user_service.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/user/address_info/presentation/screen/address_info_screen.dart';
 import 'package:super_mall/features/user/payment_info/presentation/screen/payment_info_screen.dart';
+import 'package:super_mall/features/user/user_info/data/model/user_model.dart';
 import 'package:super_mall/features/user/user_info/presentation/screen/user_info_edit_screen.dart';
 import 'package:super_mall/features/user/wishlist/presentation/screen/wishlist_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 
-class UserInfoScreen extends StatelessWidget {
-  const UserInfoScreen({super.key});
+class UserInfoScreen extends StatefulWidget {
+  const UserInfoScreen({super.key, this.user});
+  final dynamic user; // Accept either RegistrationModel or null
+
+  @override
+  State<UserInfoScreen> createState() => _UserInfoScreenState();
+}
+
+class _UserInfoScreenState extends State<UserInfoScreen> {
+  UserModel? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    // Get user data directly from SharedPreferences
+    final data = getUserData();
+    dev.log('UserData loaded from SharedPreferences: ${data?.toJson()}');
+
+    if (mounted) {
+      setState(() {
+        userData = data;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +48,7 @@ class UserInfoScreen extends StatelessWidget {
       bottomNavigationBar:
           BottomNavigationBarPrimary(currentIndex: 3, onTap: (index) {}),
       appBar: AppbarBackTitle(
-        isBackable: true,
+        isBackable: false,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -59,7 +90,16 @@ class UserInfoScreen extends StatelessWidget {
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(Colors.transparent),
               ),
-              onPressed: () {},
+              onPressed: () async {
+                // حذف بيانات المستخدم
+                await clearUserData();
+
+                // العودة إلى شاشة تسجيل الدخول
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, PageRoutesName.login, (route) => false);
+                }
+              },
               child: Text(
                 'Sign Out',
                 style: TextStyle(
@@ -74,13 +114,22 @@ class UserInfoScreen extends StatelessWidget {
   }
 
   CircleAvatar _buildAvatarImage() {
+    // استخدام صورة المستخدم إذا كانت متوفرة
+    final userImage = userData?.image;
     return CircleAvatar(
       radius: 50.r,
-      backgroundImage: AssetImage('assets/images/thomas_shelby.jpeg'),
+      backgroundImage: userImage != null && userImage.isNotEmpty
+          ? NetworkImage(userImage) as ImageProvider
+          : AssetImage('assets/images/thomas_shelby.jpeg'),
     );
   }
 
-  Container _buildUserInfo(BuildContext context) {
+  Widget _buildUserInfo(BuildContext context) {
+    // طباعة بيانات المستخدم للتأكد
+    dev.log('User name: "${userData?.name}"');
+    dev.log('User email: "${userData?.email}"');
+    dev.log('User phone: "${userData?.phone}"');
+
     return Container(
       padding: EdgeInsets.all(15.r),
       decoration: BoxDecoration(
@@ -89,27 +138,34 @@ class UserInfoScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Ahmed Bahaa'),
-              SizedBox(height: 7.h),
-              Text(
-                'ab360180@gmail.com',
-                style: TextStyle(
-                  color: AppColorLight.grey2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userData?.name ?? 'User Name',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                  ),
                 ),
-              ),
-              SizedBox(height: 7.h),
-              Text(
-                '01206497455',
-                style: TextStyle(
-                  color: AppColorLight.grey2,
+                SizedBox(height: 7.h),
+                Text(
+                  userData?.email ?? 'user@example.com',
+                  style: TextStyle(
+                    color: AppColorLight.grey2,
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 7.h),
+                Text(
+                  userData?.phone ?? '123456789',
+                  style: TextStyle(
+                    color: AppColorLight.grey2,
+                  ),
+                ),
+              ],
+            ),
           ),
-          Spacer(),
           InkWell(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {

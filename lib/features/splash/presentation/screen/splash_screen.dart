@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
+import 'package:super_mall/core/services/user_service.dart';
 import 'package:super_mall/features/auth/login/presentation/screen/login_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
 import 'package:super_mall/features/splash/logic/cubit/splash_cubit.dart';
@@ -40,11 +40,10 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     if (!mounted) return;
 
     // Check if user is logged in
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    final isLoggedIn = isUserLoggedIn();
 
     if (mounted) {
-      if (token != null && token.isNotEmpty) {
+      if (isLoggedIn) {
         // User is logged in, navigate to home
         Navigator.pushReplacementNamed(context, PageRoutesName.home);
       } else {

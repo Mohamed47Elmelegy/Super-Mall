@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_mall/core/bloc_observer.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/core/routes/routes.dart';
+import 'package:super_mall/core/services/shared_preferences_sengltion.dart';
 import 'package:super_mall/core/theme/theme_data/theme_data_light.dart';
 import 'package:super_mall/features/home/presentation/cubit/category_cubit.dart';
 import 'package:super_mall/service_locator.dart';
@@ -17,8 +18,11 @@ import 'package:super_mall/features/product/data/repository/product.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'features/home/data/repository/category_repository.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SharedPreferences
+  await Prefs.init();
 
   // Register BlocObserver
   Bloc.observer = BlocObserverService();

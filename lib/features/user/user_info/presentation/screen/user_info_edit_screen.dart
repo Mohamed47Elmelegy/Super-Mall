@@ -11,15 +11,17 @@ class UserInfoEditScreen extends StatelessWidget {
       appBar: AppbarBackTitle(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          children: [
-            _buildAvatarImage(),
-            SizedBox(height: 50.h),
-            // _buildUserEditInfo(),
-            _buildInfoEditable(context),
-            SizedBox(height: MediaQuery.of(context).size.height / 3),
-            TextButton(onPressed: () {}, child: Text('Save Changes')),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildAvatarImage(),
+              SizedBox(height: 50.h),
+              // _buildUserEditInfo(),
+              _buildInfoEditable(context),
+              SizedBox(height: MediaQuery.of(context).size.height / 3),
+              TextButton(onPressed: () {}, child: Text('Save Changes')),
+            ],
+          ),
         ),
       ),
     );

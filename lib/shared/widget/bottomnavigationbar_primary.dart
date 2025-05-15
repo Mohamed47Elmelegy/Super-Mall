@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
-import 'package:super_mall/features/notification/presentation/screen/notification_screen.dart';
-import 'package:super_mall/features/order/presentation/screen/order_screen.dart';
-import 'package:super_mall/features/user/user_info/presentation/screen/user_info_screen.dart';
+import '../../core/routes/page_routes_name.dart';
 
 class BottomNavigationBarPrimary extends StatelessWidget {
   final int currentIndex;
@@ -34,7 +31,7 @@ class BottomNavigationBarPrimary extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Image.asset('assets/images/notificationtab_deactive.png'),
           activeIcon: Image.asset('assets/images/notificationtab_active.png'),
-          label:  'Notifications',
+          label: 'Notifications',
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset('assets/vectors/orders.svg'),
@@ -53,20 +50,16 @@ class BottomNavigationBarPrimary extends StatelessWidget {
   void _navigateToScreen(BuildContext context, int index) {
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.pushReplacementNamed(context, PageRoutesName.home);
         break;
       case 1:
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => NotificationScreen()));
+        Navigator.pushReplacementNamed(context, PageRoutesName.notifications);
         break;
       case 2:
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => OrderScreen()));
+        Navigator.pushReplacementNamed(context, PageRoutesName.orders);
         break;
       case 3:
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => UserInfoScreen()));
+        Navigator.pushReplacementNamed(context, PageRoutesName.profile);
         break;
     }
   }

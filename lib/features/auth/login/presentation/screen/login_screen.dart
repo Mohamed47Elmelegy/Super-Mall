@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
+import 'package:super_mall/core/services/user_service.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/auth/forget_password/presentation/screen/forget_password_screen.dart';
 import 'package:super_mall/features/auth/login/data/model/login.dart';
@@ -11,6 +11,8 @@ import 'package:super_mall/features/auth/login/logic/cubit/login_state.dart';
 import 'package:super_mall/features/auth/login/presentation/widget/social_media_register_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/features/auth/register/presentation/screen/register_screen.dart';
+import 'package:super_mall/features/user/user_info/data/model/user_model.dart';
+import 'dart:developer' as dev;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -64,11 +66,27 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state is LoginError) {
           _showErrorSnackBar(state.message);
         } else if (state is LoginSucces) {
-          final token = state.response.token;
-          if (token != null) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('token', token);
+          dev.log('Login successful with token: ${state.response.token}');
+          if (state.response.user != null) {
+            dev.log(
+                'User data received: ${state.response.user?.name}, ${state.response.user?.email}');
           }
+
+          // Create user model from login response with complete user data
+          final user = UserModel(
+            token: state.response.token,
+            id: state.response.user?.id.toString(),
+            name: state.response.user?.name,
+            email: state.response.user?.email,
+            phone: state.response.user?.phone,
+            image: state.response.user?.avatar,
+          );
+
+          dev.log('Saving user data: ${user.toJson()}');
+
+          // Save user data using UserService
+          await saveUserData(user);
+
           if (mounted) {
             Navigator.pushReplacementNamed(context, PageRoutesName.home);
           }
