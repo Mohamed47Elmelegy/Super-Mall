@@ -12,6 +12,7 @@ import 'package:super_mall/features/user/user_info/presentation/screen/user_info
 import 'package:super_mall/features/user/wishlist/presentation/screen/wishlist_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
+import 'package:super_mall/shared/widget/skeleton_screen.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({super.key, this.user});
@@ -23,6 +24,7 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   UserModel? userData;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     if (mounted) {
       setState(() {
         userData = data;
+        isLoading = false;
       });
     }
   }
@@ -50,66 +53,72 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       appBar: AppbarBackTitle(
         isBackable: false,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
-        child: Column(
-          children: [
-            _buildAvatarImage(),
-            SizedBox(height: 20.h),
-            _buildUserInfo(context),
-            SizedBox(height: 30.h),
-            UserInfoToGo(
-                title: 'Address',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AddressInfoScreen();
-                  }));
-                }),
-            SizedBox(height: 10.h),
-            UserInfoToGo(
-                title: 'Wishlist',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return WishlistScreen();
-                  }));
-                }),
-            SizedBox(height: 10.h),
-            UserInfoToGo(
-                title: 'Payment',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return PaymentInfoScreen();
-                  }));
-                }),
-            SizedBox(height: 10.h),
-            UserInfoToGo(title: 'Help'),
-            SizedBox(height: 10.h),
-            UserInfoToGo(title: 'Support'),
-            Spacer(),
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.transparent),
-              ),
-              onPressed: () async {
-                // حذف بيانات المستخدم
-                await clearUserData();
+      body: isLoading
+          ? const SkeletonProfileScreen() // Use the skeleton screen when loading
+          : Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+              child: Column(
+                children: [
+                  _buildAvatarImage(),
+                  SizedBox(height: 20.h),
+                  _buildUserInfo(context),
+                  SizedBox(height: 30.h),
+                  UserInfoToGo(
+                      title: 'Address',
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return AddressInfoScreen();
+                        }));
+                      }),
+                  SizedBox(height: 10.h),
+                  UserInfoToGo(
+                      title: 'Wishlist',
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return WishlistScreen();
+                        }));
+                      }),
+                  SizedBox(height: 10.h),
+                  UserInfoToGo(
+                      title: 'Payment',
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return PaymentInfoScreen();
+                        }));
+                      }),
+                  SizedBox(height: 10.h),
+                  UserInfoToGo(title: 'Help'),
+                  SizedBox(height: 10.h),
+                  UserInfoToGo(title: 'Support'),
+                  Spacer(),
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStateProperty.all(Colors.transparent),
+                    ),
+                    onPressed: () async {
+                      // حذف بيانات المستخدم
+                      await clearUserData();
 
-                // العودة إلى شاشة تسجيل الدخول
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, PageRoutesName.login, (route) => false);
-                }
-              },
-              child: Text(
-                'Sign Out',
-                style: TextStyle(
-                  color: AppColorLight.red,
-                ),
+                      // العودة إلى شاشة تسجيل الدخول
+                      if (context.mounted) {
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, PageRoutesName.login, (route) => false);
+                      }
+                    },
+                    child: Text(
+                      'Sign Out',
+                      style: TextStyle(
+                        color: AppColorLight.red,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 

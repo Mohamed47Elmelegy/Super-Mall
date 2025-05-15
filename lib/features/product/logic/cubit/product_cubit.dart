@@ -36,4 +36,22 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductError(e.toString()));
     }
   }
+
+  Future<void> getProductById(String productCode) async {
+    emit(ProductLoading());
+    try {
+      // In a real app, you would have a dedicated API endpoint for this
+      // Here we're simulating by fetching all products and filtering
+      final allProducts = await repository.fetchProducts();
+
+      final product = allProducts.firstWhere(
+        (product) => product.code == productCode,
+        orElse: () => throw Exception('Product not found'),
+      );
+
+      emit(ProductDetailLoaded(product));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+    }
+  }
 }

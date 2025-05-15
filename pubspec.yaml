@@ -21,6 +21,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   connectivity_plus: ^6.1.4
   shared_preferences: ^2.3.2
+  skeletonizer: ^1.4.3
 
 dev_dependencies:
   flutter_test:

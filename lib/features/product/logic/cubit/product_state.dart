@@ -1,5 +1,3 @@
-
-
 import '../../data/model/product.dart';
 
 abstract class ProductState {}
@@ -11,6 +9,11 @@ class ProductLoading extends ProductState {}
 class ProductLoaded extends ProductState {
   final List<Product> products;
   ProductLoaded(this.products);
+}
+
+class ProductDetailLoaded extends ProductState {
+  final Product product;
+  ProductDetailLoaded(this.product);
 }
 
 class ProductError extends ProductState {

@@ -12,6 +12,7 @@ import 'package:super_mall/features/auth/login/presentation/widget/social_media_
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/features/auth/register/presentation/screen/register_screen.dart';
 import 'package:super_mall/features/user/user_info/data/model/user_model.dart';
+import 'package:super_mall/shared/widget/skeleton_content.dart';
 import 'dart:developer' as dev;
 
 class LoginScreen extends StatefulWidget {
@@ -216,12 +217,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _continueButton(LoginState state) {
+    final isLoading = state is LoginLoading;
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: state is LoginLoading
-            ? null
-            : () {
+      child: isLoading
+          ? const SkeletonButton()
+          : ElevatedButton(
+              onPressed: () {
                 if (_emailController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -236,10 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   curve: Curves.easeInOut,
                 );
               },
-        child: state is LoginLoading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('Continue'),
-      ),
+              child: const Text('Continue'),
+            ),
     );
   }
 
@@ -285,12 +285,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _signIn(LoginState state) {
+    final isLoading = state is LoginLoading;
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: state is LoginLoading
-            ? null
-            : () {
+      child: isLoading
+          ? const SkeletonButton()
+          : ElevatedButton(
+              onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   context.read<LoginCubit>().login(
                         UserLoginModel(
@@ -300,10 +301,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                 }
               },
-        child: state is LoginLoading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('Sign In'),
-      ),
+              child: const Text('Sign In'),
+            ),
     );
   }
 

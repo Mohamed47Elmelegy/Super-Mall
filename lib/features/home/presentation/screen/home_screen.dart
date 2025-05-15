@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
+import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../../../core/routes/page_routes_name.dart';
 import '../../data/model/category.dart';
 import '../cubit/category_cubit.dart';
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen>
               body: RefreshIndicator(
                 onRefresh: () async {
                   await context.read<HomeCubit>().loadHomeData();
-                  await context.read<CategoryCubit>().getCategories();
+                  // await context.read<CategoryCubit>().getCategories();
                 },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenPadding),
@@ -64,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         _searchField(),
                         if (homeState is HomeLoading)
-                          const Center(child: CircularProgressIndicator())
+                          const SkeletonHomeScreen()
                         else if (homeState is HomeError)
                           Center(child: Text(homeState.message))
                         else if (homeState is HomeLoaded)
@@ -101,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen>
               MaterialPageRoute(builder: (context) => CategoriesScreen()));
         }),
         SizedBox(height: 20.h),
-        _categoriesElements(categoryState),
+        _buildCategoriesSection(categoryState),
         SizedBox(height: 20.h),
         _itemsHeader('Top Selling', 'See All', action: () {}),
         SizedBox(height: 10.h),
@@ -123,6 +125,17 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ],
     );
+  }
+
+  Widget _buildCategoriesSection(CategoryState categoryState) {
+    if (categoryState is CategoryLoading) {
+      return SizedBox(height: 120.h); // Placeholder for skeleton
+    } else if (categoryState is CategoryError) {
+      return Center(child: Text(categoryState.message));
+    } else if (categoryState is CategoryLoaded) {
+      return _buildCategoriesList(categoryState.categories);
+    }
+    return const SizedBox.shrink();
   }
 
   Row _itemsHeader(
@@ -151,32 +164,6 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ],
     );
-  }
-
-  Widget _categoriesElements(CategoryState categoryState) {
-    if (categoryState is CategoryLoading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (categoryState is CategoryError) {
-      return Center(child: Text(categoryState.message));
-    } else if (categoryState is CategoryLoaded) {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: categoryState.categories.map((category) {
-            return Padding(
-              padding: EdgeInsets.only(right: 7.w),
-              child: _categoryElement(
-                path: category.image,
-                title: category.name['en'] ?? category.name['ar'] ?? '',
-                category: category,
-              ),
-            );
-          }).toList(),
-        ),
-      );
-    }
-    return const SizedBox(); // fallback
   }
 
   Widget _categoryElement(
@@ -275,15 +262,22 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // مثال على استخدام Wrap بدلاً من Row للفلاتر (لو عندك فلاتر كثيرة):
-  Widget _filtersBar(List<String> filters) {
-    return Wrap(
-      spacing: 8.0,
-      children: filters
-          .map((filter) => Chip(
-                label: Text(filter),
-              ))
-          .toList(),
+  Widget _buildCategoriesList(List<Category> categories) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: categories.map((category) {
+          return Padding(
+            padding: EdgeInsets.only(right: 7.w),
+            child: _categoryElement(
+              path: category.image,
+              title: category.name['en'] ?? category.name['ar'] ?? '',
+              category: category,
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

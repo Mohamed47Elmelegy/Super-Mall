@@ -1,104 +1,140 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
+import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
+import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../data/model/product.dart';
+import '../../logic/cubit/product_state.dart';
 
-class ProductScreen extends StatelessWidget {
-  final Product product;
+class ProductScreen extends StatefulWidget {
+  final String productCode;
+  final Product? product; // Optional, for direct navigation
 
   const ProductScreen({
     super.key,
-    required this.product,
+    required this.productCode,
+    this.product,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final List<String> images =
-        product.gallery.isNotEmpty ? product.gallery : [product.image];
+  State<ProductScreen> createState() => _ProductScreenState();
+}
 
+class _ProductScreenState extends State<ProductScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Skip loading if product is already provided
+    if (widget.product == null) {
+      context.read<ProductCubit>().getProductById(widget.productCode);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppbarBackTitle(
         reverseLeading: IconButton(
           onPressed: () {},
-          icon: SvgPicture.asset('assets/vector/fav-icon.svg'),
+          icon: SvgPicture.asset('assets/vectors/fav-icon.svg'),
         ),
         isBackable: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  autoPlay: true,
-                ),
-                items: images.map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Card(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 1.0.w),
-                          child: Image.network(i, fit: BoxFit.cover),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
+      body: widget.product != null
+          ? _buildProductDetails(widget.product!)
+          : BlocBuilder<ProductCubit, ProductState>(
+              builder: (context, state) {
+                if (state is ProductLoading) {
+                  return const SkeletonProductDetailsScreen();
+                } else if (state is ProductError) {
+                  return Center(child: Text(state.message));
+                } else if (state is ProductDetailLoaded) {
+                  return _buildProductDetails(state.product);
+                }
+                return const SizedBox();
+              },
+            ),
+    );
+  }
+
+  Widget _buildProductDetails(Product product) {
+    final List<String> images =
+        product.gallery.isNotEmpty ? product.gallery : [product.image];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CarouselSlider(
+              options: CarouselOptions(
+                height: MediaQuery.of(context).size.height * 0.35,
+                autoPlay: true,
               ),
-              SizedBox(height: 20.h),
-              Text(product.name['en'] ?? '',
-                  style:
-                      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10.h),
-              Text('EGP ${product.price}',
-                  style:
-                      TextStyle(fontSize: 18.sp, color: AppColorLight.primary)),
-              SizedBox(height: 10.h),
-              Text('Brand: ${product.brand['en'] ?? ''}'),
-              Text('Category: ${product.category['en'] ?? ''}'),
-              Text('Quantity: ${product.quantity}'),
-              SizedBox(height: 20.h),
-              Text(product.description['en'] ?? '',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
-              SizedBox(height: 20.h),
-              Text('Shipping & Returns'),
-              SizedBox(height: 10.h),
-              Text('Free standard shipping and free 60-day returns',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
-              SizedBox(height: 20.h),
-              _buildSizeSelector(),
-              SizedBox(height: 10.h),
-              _buildColorSelector(),
-              SizedBox(height: 10.h),
-              _buildQuantitySelector(),
-              SizedBox(height: 10.h),
-              Text(
-                'Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you plenty of room to layer underneath, while the soft corduroy keeps it casual and timeless.',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                ),
+              items: images.map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Card(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.symmetric(horizontal: 1.0.w),
+                        child: Image.network(i, fit: BoxFit.cover),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20.h),
+            Text(product.name['en'] ?? '',
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10.h),
+            Text('EGP ${product.price}',
+                style:
+                    TextStyle(fontSize: 18.sp, color: AppColorLight.primary)),
+            SizedBox(height: 10.h),
+            Text('Brand: ${product.brand['en'] ?? ''}'),
+            Text('Category: ${product.category['en'] ?? ''}'),
+            Text('Quantity: ${product.quantity}'),
+            SizedBox(height: 20.h),
+            Text(product.description['en'] ?? '',
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
+            SizedBox(height: 20.h),
+            Text('Shipping & Returns'),
+            SizedBox(height: 10.h),
+            Text('Free standard shipping and free 60-day returns',
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
+            SizedBox(height: 20.h),
+            _buildSizeSelector(),
+            SizedBox(height: 10.h),
+            _buildColorSelector(),
+            SizedBox(height: 10.h),
+            _buildQuantitySelector(),
+            SizedBox(height: 10.h),
+            Text(
+              'Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you plenty of room to layer underneath, while the soft corduroy keeps it casual and timeless.',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[600],
               ),
-              SizedBox(height: 20.h),
-              Text('4.5 Ratings'),
-              Text(
-                '213 Reviews',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey[600],
-                ),
+            ),
+            SizedBox(height: 20.h),
+            Text('4.5 Ratings'),
+            Text(
+              '213 Reviews',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[600],
               ),
-              _reviewCard(),
-              _reviewCard(),
-            ],
-          ),
+            ),
+            _reviewCard(),
+            _reviewCard(),
+          ],
         ),
       ),
     );
@@ -220,8 +256,7 @@ class ProductScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 20.r,
-                  backgroundImage:
-                      AssetImage('assets/images/review_avatar1.png'),
+                  backgroundColor: Colors.grey[300],
                 ),
                 SizedBox(width: 10.w),
                 Text('Alex Morgan'),
@@ -238,7 +273,7 @@ class ProductScreen extends StatelessWidget {
             ),
             SizedBox(height: 10.h),
             Text(
-                'opinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinions'),
+                'opinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinionsopinions'),
             Text('12days ago'),
           ],
         ),

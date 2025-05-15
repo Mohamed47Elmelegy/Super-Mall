@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
+import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../../../core/routes/page_routes_name.dart';
 import '../cubit/category_cubit.dart';
 
@@ -47,7 +48,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 child: BlocBuilder<CategoryCubit, CategoryState>(
                   builder: (context, state) {
                     if (state is CategoryLoading) {
-                      return Center(child: CircularProgressIndicator());
+                      return const SkeletonCategoriesScreen();
                     } else if (state is CategoryError) {
                       return Center(child: Text(state.message));
                     } else if (state is CategoryLoaded) {

@@ -10,8 +10,6 @@ import 'package:super_mall/features/notification/presentation/screen/notificatio
 import 'package:super_mall/features/order/presentation/screen/order_screen.dart';
 import 'package:super_mall/features/splash/presentation/screen/splash_screen.dart';
 import 'package:super_mall/features/user/user_info/presentation/screen/user_info_screen.dart';
-
-import '../../features/auth/register/data/model/register.dart';
 import '../../features/product/data/model/product.dart';
 import '../../features/product/presentation/screen/product_screen.dart';
 import '../../features/home/data/model/category.dart';
@@ -58,7 +56,7 @@ class Routes {
       case PageRoutesName.productDetails:
         final product = settings.arguments as Product;
         return MaterialPageRoute(
-          builder: (context) => ProductScreen(product: product),
+          builder: (context) => ProductScreen(product: product, productCode: '',),
         );
 
       default:
