@@ -1,5 +1,7 @@
 class ApiConstants {
-  static const String baseUrl = 'https://flutter.thelper.space/api';
+  // static const String baseUrl = 'https://flutter.thelper.space/api';
+
+  static const String baseUrl = 'http://10.0.2.2:8000/api';
 
   // Auth Endpoints
   static const String login = '/auth';
@@ -12,6 +14,7 @@ class ApiConstants {
   static const String facebookLogin = '/auth/facebook';
   static const String facebookRegister = '/auth/facebook/register';
   static const String forgotPassword = '/auth/forgot-password';
+  static const String banners = '/banners';
 
   // Headers
   static const Map<String, String> headers = {

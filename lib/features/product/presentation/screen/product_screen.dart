@@ -127,25 +127,25 @@ class _ProductScreenState extends State<ProductScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // CarouselSlider(
-            //   options: CarouselOptions(
-            //     height: MediaQuery.of(context).size.height * 0.35,
-            //     autoPlay: true,
-            //   ),
-            //   items: images.map((i) {
-            //     return Builder(
-            //       builder: (BuildContext context) {
-            //         return Card(
-            //           child: Container(
-            //             width: MediaQuery.of(context).size.width,
-            //             margin: EdgeInsets.symmetric(horizontal: 1.0.w),
-            //             child: Image.network(i, fit: BoxFit.cover),
-            //           ),
-            //         );
-            //       },
-            //     );
-            //   }).toList(),
-            // ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: MediaQuery.of(context).size.height * 0.35,
+                autoPlay: true,
+              ),
+              items: product.gallery.map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Card(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.symmetric(horizontal: 1.0.w),
+                        child: Image.network(i, fit: BoxFit.cover),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
             SizedBox(height: 20.h),
             Text(product.name['en'] ?? '',
                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
@@ -160,6 +160,94 @@ class _ProductScreenState extends State<ProductScreen> {
             SizedBox(height: 20.h),
             Text(product.description['en'] ?? '',
                 style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
+            SizedBox(height: 20.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(20.r),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(2.5.r),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.local_shipping_outlined, size: 30.sp),
+                              SizedBox(height: 16.h),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.grey[600],
+                                  ),
+                                  children: [
+                                    TextSpan(text: 'Estimate delivery times: '),
+                                    TextSpan(
+                                      text: '12-26 days',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' (International), '),
+                                    TextSpan(
+                                      text: '3-6 days',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' (United States).'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(20.r),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(2.5.r),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.assignment_return_outlined,
+                                  size: 30.sp),
+                              SizedBox(height: 16.h),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.grey[600],
+                                  ),
+                                  children: [
+                                    TextSpan(text: 'Return within '),
+                                    TextSpan(
+                                      text: '30 days',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(
+                                        text:
+                                            ' of purchase. Duties & taxes are non-refundable.'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 20.h),
             Text('Shipping & Returns'),
             SizedBox(height: 10.h),

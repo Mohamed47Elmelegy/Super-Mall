@@ -223,6 +223,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: isLoading
           ? const SkeletonButton()
           : ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColorLight.primary,
+              ),
               onPressed: () {
                 if (_emailController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -238,7 +241,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   curve: Curves.easeInOut,
                 );
               },
-              child: const Text('Continue'),
+              child: const Text(
+                'Continue',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
     );
   }
@@ -291,6 +297,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: isLoading
           ? const SkeletonButton()
           : ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColorLight.primary,
+              ),
               onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   context.read<LoginCubit>().login(
@@ -301,7 +310,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                 }
               },
-              child: const Text('Sign In'),
+              child: const Text(
+                'Sign In',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
     );
   }

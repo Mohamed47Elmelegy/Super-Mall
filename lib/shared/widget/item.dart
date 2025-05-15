@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/product/data/model/product.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
+
+import '../../features/cart/logic/cubit/cart_cubit.dart';
 
 class Item extends StatelessWidget {
   final Product product;
@@ -46,6 +49,7 @@ class Item extends StatelessWidget {
                             ? product.gallery.first
                             : product.image,
                         width: 150.w,
+                        height: 150.h,
                         fit: BoxFit.fitHeight,
                         errorBuilder: (context, error, stackTrace) =>
                             Icon(Icons.broken_image, size: 150.w),
@@ -66,7 +70,24 @@ class Item extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 3.h),
-                Text('EGP ${product.price}'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('EGP ${product.price}'),
+                    IconButton(
+                      color: AppColorLight.primary,
+                      icon: SvgPicture.asset('assets/vectors/bag.svg'),
+                      onPressed: () {
+                        context.read<CartCubit>().addToCart(product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Product added to cart'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/theme/app_color/app_color_light.dart';
+
 class AppbarBackTitle extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool? isBackable;
@@ -15,6 +17,7 @@ class AppbarBackTitle extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: Colors.transparent,
       centerTitle: true,
       leading: isBackable == true
           ? Padding(

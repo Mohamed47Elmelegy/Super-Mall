@@ -19,7 +19,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          icon: SvgPicture.asset('assets/vectors/bag.svg'),
+          icon: SvgPicture.asset('assets/vectors/bag-cart.svg'),
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const CartScreen()));
