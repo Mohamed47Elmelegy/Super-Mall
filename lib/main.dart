@@ -59,6 +59,7 @@ class MainApp extends StatelessWidget {
             BlocProvider<CategoryCubit>(
               create: (context) => CategoryCubit(getIt<CategoryRepository>()),
             ),
+            
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

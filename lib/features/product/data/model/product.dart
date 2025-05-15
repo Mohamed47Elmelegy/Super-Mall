@@ -1,4 +1,6 @@
-class Product {
+import 'package:equatable/equatable.dart';
+
+class Product extends Equatable {
   final String code;
   final Map<String, String> name;
   final Map<String, String> category;
@@ -52,4 +54,7 @@ class Product {
       createdAt: json['created_at'],
     );
   }
+
+  @override
+  List<Object?> get props => [code];
 }

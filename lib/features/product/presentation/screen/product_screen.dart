@@ -71,25 +71,25 @@ class _ProductScreenState extends State<ProductScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CarouselSlider(
-              options: CarouselOptions(
-                height: MediaQuery.of(context).size.height * 0.35,
-                autoPlay: true,
-              ),
-              items: images.map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Card(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.symmetric(horizontal: 1.0.w),
-                        child: Image.network(i, fit: BoxFit.cover),
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
+            // CarouselSlider(
+            //   options: CarouselOptions(
+            //     height: MediaQuery.of(context).size.height * 0.35,
+            //     autoPlay: true,
+            //   ),
+            //   items: images.map((i) {
+            //     return Builder(
+            //       builder: (BuildContext context) {
+            //         return Card(
+            //           child: Container(
+            //             width: MediaQuery.of(context).size.width,
+            //             margin: EdgeInsets.symmetric(horizontal: 1.0.w),
+            //             child: Image.network(i, fit: BoxFit.cover),
+            //           ),
+            //         );
+            //       },
+            //     );
+            //   }).toList(),
+            // ),
             SizedBox(height: 20.h),
             Text(product.name['en'] ?? '',
                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
