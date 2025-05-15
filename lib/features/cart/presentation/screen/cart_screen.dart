@@ -1,23 +1,89 @@
 import 'package:flutter/material.dart';
-import 'package:super_mall/features/cart/presentation/view/cart_item.dart';
-import 'package:super_mall/features/cart/presentation/view/empty_cart.dart';
-import 'package:super_mall/shared/widget/appbar_back_title.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+import '../../../../core/theme/app_color/app_color_light.dart';
+import '../../data/model/cart.dart';
+import '../../data/model/cart_item.dart';
+import '../../logic/cubit/cart_cubit.dart';
+import '../../logic/cubit/cart_state.dart';
+import '../widgets/cart_empty.dart';
+import '../widgets/cart_item_card.dart';
+import '../widgets/cart_summary.dart';
 
-  @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  final isEmpty = true;
+class CartScreen extends StatelessWidget {
+  const CartScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarBackTitle(),
-      body: !isEmpty ? EmptyCart() : CartItem(),
+      appBar: AppBar(
+        title: const Text(
+          'My Cart',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          BlocBuilder<CartCubit, CartState>(
+            builder: (context, state) {
+              if (state is CartLoaded && state.cart.items.isNotEmpty) {
+                return IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () {
+                    context.read<CartCubit>().clearCart();
+                  },
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+      body: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) {
+          if (state is CartInitial) {
+            context.read<CartCubit>().loadCart();
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CartLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CartLoaded) {
+            if (state.cart.items.isEmpty) {
+              return const CartEmpty();
+            }
+            return _buildCartContent(context, state.cart);
+          } else if (state is CartError) {
+            return Center(
+              child: Text(
+                'Error: ${state.message}',
+                style: const TextStyle(color: AppColorLight.red),
+              ),
+            );
+          }
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+
+  Widget _buildCartContent(BuildContext context, Cart cart) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.all(16.r),
+            itemCount: cart.items.length,
+            itemBuilder: (context, index) {
+              final item = cart.items[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 16.r),
+                child: CartItemCard(item: item),
+              );
+            },
+          ),
+        ),
+        CartSummary(cart: cart),
+      ],
     );
   }
 }

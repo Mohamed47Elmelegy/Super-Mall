@@ -5,6 +5,7 @@ import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/core/routes/routes.dart';
 import 'package:super_mall/core/services/shared_preferences_sengltion.dart';
 import 'package:super_mall/core/theme/theme_data/theme_data_light.dart';
+import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:super_mall/features/home/presentation/cubit/category_cubit.dart';
 import 'package:super_mall/service_locator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,7 +60,9 @@ class MainApp extends StatelessWidget {
             BlocProvider<CategoryCubit>(
               create: (context) => CategoryCubit(getIt<CategoryRepository>()),
             ),
-            
+            BlocProvider<CartCubit>(
+              create: (context) => CartCubit()..loadCart(),
+            ),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

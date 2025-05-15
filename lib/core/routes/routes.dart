@@ -3,6 +3,7 @@ import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/features/auth/forget_password/presentation/screen/forget_password_screen.dart';
 import 'package:super_mall/features/auth/login/presentation/screen/login_screen.dart';
 import 'package:super_mall/features/auth/register/presentation/screen/register_screen.dart';
+import 'package:super_mall/features/cart/presentation/screen/cart_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/category_screen.dart';
 import 'package:super_mall/features/home/presentation/screen/home_screen.dart';
@@ -56,7 +57,15 @@ class Routes {
       case PageRoutesName.productDetails:
         final product = settings.arguments as Product;
         return MaterialPageRoute(
-          builder: (context) => ProductScreen(product: product, productCode: '',),
+          builder: (context) => ProductScreen(
+            product: product,
+            productCode: '',
+          ),
+        );
+
+      case PageRoutesName.cart:
+        return MaterialPageRoute(
+          builder: (context) => const CartScreen(),
         );
 
       default:

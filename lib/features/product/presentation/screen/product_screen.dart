@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
+import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
@@ -25,6 +27,8 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +58,16 @@ class _ProductScreenState extends State<ProductScreen> {
                   return Center(child: Text(state.message));
                 } else if (state is ProductDetailLoaded) {
                   return _buildProductDetails(state.product);
+                }
+                return const SizedBox();
+              },
+            ),
+      bottomNavigationBar: widget.product != null
+          ? _buildBottomBar(widget.product!)
+          : BlocBuilder<ProductCubit, ProductState>(
+              builder: (context, state) {
+                if (state is ProductDetailLoaded) {
+                  return _buildBottomBar(state.product);
                 }
                 return const SizedBox();
               },
@@ -219,7 +233,11 @@ class _ProductScreenState extends State<ProductScreen> {
               color: AppColorLight.primary,
             ),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  quantity = quantity + 1;
+                });
+              },
               icon: Icon(Icons.add),
             ),
           ),
@@ -228,7 +246,7 @@ class _ProductScreenState extends State<ProductScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Text('1'),
+            child: Text('$quantity'),
           ),
           Container(
             decoration: BoxDecoration(
@@ -236,7 +254,13 @@ class _ProductScreenState extends State<ProductScreen> {
               color: AppColorLight.primary,
             ),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                if (quantity > 1) {
+                  setState(() {
+                    quantity = quantity - 1;
+                  });
+                }
+              },
               icon: Icon(Icons.remove),
             ),
           ),
@@ -277,6 +301,86 @@ class _ProductScreenState extends State<ProductScreen> {
             Text('12days ago'),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(Product product) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Price',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  '\$${(product.price * quantity).toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                // Add to cart
+                context
+                    .read<CartCubit>()
+                    .addToCart(product, quantity: quantity);
+
+                // Show snackbar
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${product.name['en']} added to cart'),
+                    action: SnackBarAction(
+                      label: 'VIEW CART',
+                      onPressed: () {
+                        Navigator.pushNamed(context, PageRoutesName.cart);
+                      },
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColorLight.primary,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              child: Text(
+                'Add to Cart',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
