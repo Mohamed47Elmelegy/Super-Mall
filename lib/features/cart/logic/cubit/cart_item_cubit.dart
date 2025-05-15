@@ -36,7 +36,7 @@ class CartItemCubit extends Cubit<CartItemState> {
     if (state is CartItemLoaded) {
       final currentState = state as CartItemLoaded;
       final currentItem = currentState.item;
-      cartCubit.updateQuantity(itemId, currentItem.quantity + 1);
+      cartCubit.updateQuantity(currentItem.product, currentItem.quantity + 1);
       _loadCartItem();
     }
   }
@@ -46,7 +46,7 @@ class CartItemCubit extends Cubit<CartItemState> {
       final currentState = state as CartItemLoaded;
       final currentItem = currentState.item;
       if (currentItem.quantity > 1) {
-        cartCubit.updateQuantity(itemId, currentItem.quantity - 1);
+        cartCubit.updateQuantity(currentItem.product, currentItem.quantity - 1);
         _loadCartItem();
       } else {
         removeItem();
@@ -55,8 +55,11 @@ class CartItemCubit extends Cubit<CartItemState> {
   }
 
   void updateQuantity(int quantity) {
-    cartCubit.updateQuantity(itemId, quantity);
-    _loadCartItem();
+    if (state is CartItemLoaded) {
+      final currentItem = (state as CartItemLoaded).item;
+      cartCubit.updateQuantity(currentItem.product, quantity);
+      _loadCartItem();
+    }
   }
 
   void removeItem() {

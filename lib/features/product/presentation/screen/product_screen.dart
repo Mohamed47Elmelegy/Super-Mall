@@ -9,6 +9,7 @@ import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
+import '../../../cart/logic/cubit/cart_state.dart';
 import '../../data/model/product.dart';
 import '../../logic/cubit/product_state.dart';
 
@@ -27,7 +28,9 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
-  int quantity = 1;
+  late int quantity;
+  Offset cartIconOffset =
+      const Offset(16, 100); // initial position (right, bottom)
 
   @override
   void initState() {
@@ -40,6 +43,10 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int cartCount = context.watch<CartCubit>().state is CartLoaded
+        ? (context.watch<CartCubit>().state as CartLoaded).cart.items.length
+        : 0;
+
     return Scaffold(
       appBar: AppbarBackTitle(
         reverseLeading: IconButton(
@@ -48,20 +55,56 @@ class _ProductScreenState extends State<ProductScreen> {
         ),
         isBackable: true,
       ),
-      body: widget.product != null
-          ? _buildProductDetails(widget.product!)
-          : BlocBuilder<ProductCubit, ProductState>(
-              builder: (context, state) {
-                if (state is ProductLoading) {
-                  return const SkeletonProductDetailsScreen();
-                } else if (state is ProductError) {
-                  return Center(child: Text(state.message));
-                } else if (state is ProductDetailLoaded) {
-                  return _buildProductDetails(state.product);
-                }
-                return const SizedBox();
-              },
+      body: Stack(
+        children: [
+          widget.product != null
+              ? _buildProductDetails(widget.product!)
+              : BlocBuilder<ProductCubit, ProductState>(
+                  builder: (context, state) {
+                    if (state is ProductLoading) {
+                      return const SkeletonProductDetailsScreen();
+                    } else if (state is ProductError) {
+                      return Center(child: Text(state.message));
+                    } else if (state is ProductDetailLoaded) {
+                      return _buildProductDetails(state.product);
+                    }
+                    return const SizedBox();
+                  },
+                ),
+          if (cartCount > 0)
+            Positioned(
+              right: cartIconOffset.dx,
+              bottom: cartIconOffset.dy,
+              child: Draggable(
+                feedback: _buildCartIcon(cartCount),
+                childWhenDragging: const SizedBox.shrink(),
+                onDragEnd: (details) {
+                  setState(() {
+                    final RenderBox renderBox =
+                        context.findRenderObject() as RenderBox;
+                    final Size size = renderBox.size;
+                    double newRight =
+                        size.width - details.offset.dx - 56; // 56 = icon size
+                    double newBottom = size.height -
+                        details.offset.dy -
+                        56 -
+                        MediaQuery.of(context).padding.top;
+                    cartIconOffset = Offset(
+                      newRight.clamp(0, size.width - 56),
+                      newBottom.clamp(0, size.height - 56),
+                    );
+                  });
+                },
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, PageRoutesName.cart);
+                  },
+                  child: _buildCartIcon(cartCount),
+                ),
+              ),
             ),
+        ],
+      ),
       bottomNavigationBar: widget.product != null
           ? _buildBottomBar(widget.product!)
           : BlocBuilder<ProductCubit, ProductState>(
@@ -76,8 +119,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildProductDetails(Product product) {
-    final List<String> images =
-        product.gallery.isNotEmpty ? product.gallery : [product.image];
+    int quantity = context.watch<CartCubit>().getQuantity(product);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -128,7 +170,9 @@ class _ProductScreenState extends State<ProductScreen> {
             SizedBox(height: 10.h),
             _buildColorSelector(),
             SizedBox(height: 10.h),
-            _buildQuantitySelector(),
+            quantity > 0
+                ? _buildQuantitySelector(product, quantity)
+                : SizedBox.shrink(),
             SizedBox(height: 10.h),
             Text(
               'Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you plenty of room to layer underneath, while the soft corduroy keeps it casual and timeless.',
@@ -216,7 +260,8 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Widget _buildQuantitySelector() {
+  Widget _buildQuantitySelector(Product product, int quantity) {
+    if (quantity == 0) return SizedBox.shrink();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
       decoration: BoxDecoration(
@@ -234,9 +279,7 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
             child: IconButton(
               onPressed: () {
-                setState(() {
-                  quantity = quantity + 1;
-                });
+                onAdd(product, quantity);
               },
               icon: Icon(Icons.add),
             ),
@@ -255,11 +298,7 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
             child: IconButton(
               onPressed: () {
-                if (quantity > 1) {
-                  setState(() {
-                    quantity = quantity - 1;
-                  });
-                }
+                onRemove(product, quantity);
               },
               icon: Icon(Icons.remove),
             ),
@@ -267,6 +306,31 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
       ),
     );
+  }
+
+  void addToCartIfNotExists(Product product) {
+    final cartCubit = context.read<CartCubit>();
+    if (cartCubit.getQuantity(product) == 0) {
+      cartCubit.addToCart(product, quantity: 1);
+    }
+  }
+
+  void onAdd(Product product, int quantity) {
+    final cartCubit = context.read<CartCubit>();
+    if (quantity == 0) {
+      cartCubit.addToCart(product, quantity: 1);
+    } else {
+      cartCubit.updateQuantity(product, quantity + 1);
+    }
+  }
+
+  void onRemove(Product product, int quantity) {
+    final cartCubit = context.read<CartCubit>();
+    if (quantity > 1) {
+      cartCubit.updateQuantity(product, quantity - 1);
+    } else if (quantity == 1) {
+      cartCubit.removeFromCart(product.code);
+    }
   }
 
   Widget _reviewCard() {
@@ -306,82 +370,78 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildBottomBar(Product product) {
-    return Container(
+    int quantity = context.watch<CartCubit>().getQuantity(product);
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Price',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  '\$${(product.price * quantity).toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          addToCartIfNotExists(product);
+          // Show snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${product.name['en']} added to cart'),
+              action: SnackBarAction(
+                label: 'VIEW CART',
+                onPressed: () {
+                  Navigator.pushNamed(context, PageRoutesName.cart);
+                },
+              ),
             ),
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
+          decoration: BoxDecoration(
+            color: const Color(0xFFEADCD1), // Light beige
+            borderRadius: BorderRadius.circular(30.r),
           ),
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () {
-                // Add to cart
-                context
-                    .read<CartCubit>()
-                    .addToCart(product, quantity: quantity);
-
-                // Show snackbar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${product.name['en']} added to cart'),
-                    action: SnackBarAction(
-                      label: 'VIEW CART',
-                      onPressed: () {
-                        Navigator.pushNamed(context, PageRoutesName.cart);
-                      },
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColorLight.primary,
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'EGP${(product.price * (quantity == 0 ? 1 : quantity)).toStringAsFixed(0)}',
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              child: Text(
-                'Add to Cart',
+              Text(
+                'Add to cart',
                 style: TextStyle(
                   fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+
+  Widget _buildCartIcon(int cartCount) {
+    return Stack(
+      alignment: Alignment.topRight,
+      children: [
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: const Color(0xFF33313B),
+          child: Image.asset('assets/images/cart.png', width: 32, height: 32),
+        ),
+        if (cartCount > 0)
+          CircleAvatar(
+            radius: 10,
+            backgroundColor: Colors.red,
+            child: Text(
+              '$cartCount',
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ),
+      ],
+    );
+  }
 }
+//

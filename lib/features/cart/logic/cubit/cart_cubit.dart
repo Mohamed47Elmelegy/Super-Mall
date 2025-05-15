@@ -77,14 +77,15 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  void updateQuantity(String itemId, int quantity) {
+  void updateQuantity(Product product, int quantity) {
     if (state is CartLoaded) {
       try {
         final currentState = state as CartLoaded;
         final currentCart = currentState.cart;
         final currentItems = currentCart.items;
 
-        final itemIndex = currentItems.indexWhere((item) => item.id == itemId);
+        final itemIndex =
+            currentItems.indexWhere((item) => item.id == product.code);
 
         if (itemIndex >= 0) {
           final item = currentItems[itemIndex];
@@ -104,6 +105,23 @@ class CartCubit extends Cubit<CartState> {
         emit(CartError(message: e.toString()));
       }
     }
+  }
+
+  int getQuantity(Product product) {
+    if (state is CartLoaded) {
+      final currentState = state as CartLoaded;
+      final currentCart = currentState.cart;
+      final currentItems = currentCart.items;
+
+      final itemIndex =
+          currentItems.indexWhere((item) => item.id == product.code);
+
+      if (itemIndex >= 0) {
+        final item = currentItems[itemIndex];
+        return item.quantity;
+      }
+    }
+    return 0;
   }
 
   void clearCart() {
