@@ -50,4 +50,24 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductError(e.toString()));
     }
   }
+
+  Future<void> getTopSellingProducts() async {
+    emit(ProductLoading());
+    try {
+      final products = await repository.getTopSellingProducts();
+      emit(ProductLoaded(products));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+    }
+  }
+
+  Future<void> getNewProducts() async {
+    emit(ProductLoading());
+    try {
+      final products = await repository.getNewProducts();
+      emit(ProductLoaded(products));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+    }
+  }
 }
