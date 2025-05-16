@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_color/app_color_light.dart';
 import '../../data/model/cart.dart';
-import '../../data/model/cart_item.dart';
 import '../../logic/cubit/cart_cubit.dart';
 import '../../logic/cubit/cart_state.dart';
 import '../widgets/cart_empty.dart';
@@ -12,7 +11,7 @@ import '../widgets/cart_item_card.dart';
 import '../widgets/cart_summary.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -18,8 +18,9 @@ class ApiConstants {
   static const String bannerslink = 'http://10.0.2.2:8000/storage/';
 
   // Headers
-  static const Map<String, String> headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  };
+  static Map<String, String> headers(String token) => {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
 }

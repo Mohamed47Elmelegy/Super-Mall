@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/checkout/presentation/screen/successfully_checkout.dart';
-import 'package:super_mall/features/product/data/model/product.dart';
 import 'package:super_mall/features/user/address_info/data/models/address_model.dart';
 import 'package:super_mall/features/user/address_info/presentation/cubit/address_cubit.dart';
 import 'package:super_mall/features/user/address_info/presentation/cubit/address_state.dart';

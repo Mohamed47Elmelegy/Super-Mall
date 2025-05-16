@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/routes/page_routes_name.dart';
+import '../../../../core/theme/app_color/app_color_light.dart';
 
 class CartEmpty extends StatelessWidget {
-  const CartEmpty({Key? key}) : super(key: key);
+  const CartEmpty({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,16 +14,16 @@ class CartEmpty extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 80.r,
-            color: Colors.grey,
+          Image.asset(
+            'assets/images/cart_empty.png',
+            width: 100.w,
+            height: 100.h,
           ),
           SizedBox(height: 16.h),
           Text(
-            'Your cart is empty',
+            'Your Cart is Empty',
             style: TextStyle(
-              fontSize: 20.sp,
+              fontSize: 24.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -35,11 +37,21 @@ class CartEmpty extends StatelessWidget {
           ),
           SizedBox(height: 24.h),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColorLight.primary,
+            ),
             onPressed: () {
               // Navigate to products or home screen
               Navigator.of(context).pushReplacementNamed(PageRoutesName.home);
             },
-            child: const Text('Shop Now'),
+            child: Text(
+              'Explore Categories',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
           ),
         ],
       ),

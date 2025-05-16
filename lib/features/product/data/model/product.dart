@@ -17,7 +17,7 @@ class Product extends Equatable {
   final bool isHot;
   final String createdAt;
 
-  Product({
+  const Product({
     required this.code,
     required this.name,
     required this.category,
