@@ -11,9 +11,12 @@ import 'package:super_mall/features/notification/presentation/screen/notificatio
 import 'package:super_mall/features/order/presentation/screen/order_screen.dart';
 import 'package:super_mall/features/splash/presentation/screen/splash_screen.dart';
 import 'package:super_mall/features/user/user_info/presentation/screen/user_info_screen.dart';
+import '../../features/checkout/presentation/screen/checkout_screen.dart';
 import '../../features/product/data/model/product.dart';
 import '../../features/product/presentation/screen/product_screen.dart';
 import '../../features/home/data/model/category.dart';
+import '../../features/user/address_info/presentation/screen/add_address_info_screen.dart';
+import '../../features/user/address_info/presentation/screen/address_info_screen.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -67,6 +70,23 @@ class Routes {
         return MaterialPageRoute(
           builder: (context) => const CartScreen(),
         );
+
+      case PageRoutesName.address:
+        return MaterialPageRoute(
+          builder: (context) => const AddressInfoScreen(),
+        );
+
+      case PageRoutesName.addAddress:
+        return MaterialPageRoute(
+          builder: (context) => const AddAddressInfoScreen(),
+        );
+
+      case PageRoutesName.checkout:
+        return MaterialPageRoute(
+          builder: (context) => const CheckoutScreen(),
+        );
+
+     
 
       default:
         return MaterialPageRoute(builder: (context) => const SplashScreen());

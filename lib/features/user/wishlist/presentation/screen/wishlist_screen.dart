@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/user/wishlist/presentation/screen/wishlist_list_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
-import 'package:super_mall/shared/widget/item.dart';
+import 'package:super_mall/features/wishlist/logic/wishlist_cubit.dart';
 import 'package:super_mall/features/product/data/model/product.dart';
+import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
+import 'package:super_mall/features/product/logic/cubit/product_state.dart';
+import 'dart:developer';
+import '../../../../wishlist/logic/wishlist_state.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -15,44 +20,14 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  // مثال على منتجات وهمية، استبدلها بمنتجات حقيقية من الـ API أو من مزود الحالة
-  final List<Product> products = [
-    Product(
-      code: '1',
-      name: {'en': 'Nike Fuel Pack'},
-      category: {'en': 'Bags'},
-      brand: {'en': 'Nike'},
-      description: {'en': 'A great pack for your fuel.'},
-      image: 'https://via.placeholder.com/150',
-      gallery: ['https://via.placeholder.com/150'],
-      quantity: 10,
-      price: 400,
-      isActive: true,
-      isNew: false,
-      isFeatured: false,
-      isBest: false,
-      isHot: false,
-      createdAt: '2024-01-01',
-    ),
-    Product(
-      code: '2',
-      name: {'en': 'Nike Show X Rush'},
-      category: {'en': 'Shoes'},
-      brand: {'en': 'Nike'},
-      description: {'en': 'Show X Rush shoes.'},
-      image: 'https://via.placeholder.com/150',
-      gallery: ['https://via.placeholder.com/150'],
-      quantity: 5,
-      price: 900,
-      isActive: true,
-      isNew: false,
-      isFeatured: false,
-      isBest: false,
-      isHot: false,
-      createdAt: '2024-01-01',
-    ),
-    // أضف المزيد من المنتجات حسب الحاجة
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // تحميل المنتجات عند فتح الشاشة
+    context.read<ProductCubit>().getProducts();
+    // تحميل المفضلة
+    context.read<WishListCubit>().loadWishList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,26 +37,49 @@ class _WishlistScreenState extends State<WishlistScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(20.r),
-        child: Column(
-          children: [
-            FavoriteListToGo(
-              title: 'My Favorites',
-              description: '${products.length} Products',
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WishlistListScreen(
-                    items: products.map((product) => Item(product: product)).toList(),
-                    title: 'My Favorites',
-                  );
-                }));
-              },
-            ),
-            SizedBox(height: 10.h),
-            FavoriteListToGo(
-              title: 'T-Shirts',
-              description: '4 Products',
-            ),
-          ],
+        child: BlocBuilder<WishListCubit, WishListState>(
+          builder: (context, wishState) {
+            // جلب المنتجات الحقيقية من ProductCubit
+            final products = context.select<ProductCubit, List<Product>>(
+              (cubit) => cubit.state is ProductLoaded
+                  ? (cubit.state as ProductLoaded).products
+                  : [],
+            );
+
+            // تصفية المنتجات المفضلة باستخدام الـ code مباشرة
+            final wishProducts = products
+                .where((p) => wishState.wishListIds.contains(p.code))
+                .toList();
+
+            log('Wishlist products: ${wishProducts.length}');
+            log('Wishlist IDs: ${wishState.wishListIds}');
+            log('All products: ${products.length}');
+
+            return Column(
+              children: [
+                FavoriteListToGo(
+                  title: 'My Favorites',
+                  description: '${wishProducts.length} Products',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WishlistListScreen(
+                          title: 'My Favorites',
+                          products: wishProducts,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 10.h),
+                FavoriteListToGo(
+                  title: 'T-Shirts',
+                  description: '4 Products',
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -119,9 +117,7 @@ class FavoriteListToGo extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title),
-              SizedBox(
-                height: 5.h,
-              ),
+              SizedBox(height: 5.h),
               Text(description),
             ],
           ),

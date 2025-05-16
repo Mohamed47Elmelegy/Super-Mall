@@ -1,6 +1,9 @@
 class Banner {
   final int id;
   final String title;
+  final String body;
+  final String buttonText;
+  final String url;
   final String image;
   final String? link;
   final DateTime createdAt;
@@ -9,6 +12,9 @@ class Banner {
   Banner({
     required this.id,
     required this.title,
+    required this.body,
+    required this.buttonText,
+    required this.url,
     required this.image,
     this.link,
     required this.createdAt,
@@ -19,21 +25,13 @@ class Banner {
     return Banner(
       id: json['id'],
       title: json['title'],
+      body: json['body'],
+      buttonText: json['button_text'],
+      url: json['url'],
       image: json['image'],
       link: json['link'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'image': image,
-      'link': link,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-    };
   }
 }

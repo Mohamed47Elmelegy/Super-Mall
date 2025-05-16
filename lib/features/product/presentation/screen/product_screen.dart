@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,12 +8,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
+import 'package:super_mall/features/cart/logic/cubit/cart_state.dart';
+import 'package:super_mall/features/product/data/model/product.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
+import 'package:super_mall/features/product/logic/cubit/product_state.dart';
+import 'package:super_mall/features/wishlist/logic/wishlist_cubit.dart'
+    as wishlist;
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
-import '../../../cart/logic/cubit/cart_state.dart';
-import '../../data/model/product.dart';
-import '../../logic/cubit/product_state.dart';
+
+import '../../../wishlist/logic/wishlist_state.dart' as wishlist;
 
 class ProductScreen extends StatefulWidget {
   final String productCode;
@@ -39,6 +45,8 @@ class _ProductScreenState extends State<ProductScreen> {
     if (widget.product == null) {
       context.read<ProductCubit>().getProductById(widget.productCode);
     }
+    // Load wishlist
+    context.read<wishlist.WishListCubit>().loadWishList();
   }
 
   @override
@@ -49,9 +57,28 @@ class _ProductScreenState extends State<ProductScreen> {
 
     return Scaffold(
       appBar: AppbarBackTitle(
-        reverseLeading: IconButton(
-          onPressed: () {},
-          icon: SvgPicture.asset('assets/vectors/fav-icon.svg'),
+        reverseLeading:
+            BlocBuilder<wishlist.WishListCubit, wishlist.WishListState>(
+          builder: (context, state) {
+            final isFavorite = state.wishListIds
+                .contains(widget.product?.code ?? widget.productCode);
+            return IconButton(
+              onPressed: () {
+                final productId = widget.product?.code ?? widget.productCode;
+                log('Favorite icon pressed for productId: $productId');
+                if (productId != null) {
+                  context.read<wishlist.WishListCubit>().toggleWish(productId);
+                }
+              },
+              icon: SvgPicture.asset(
+                'assets/vectors/fav-icon.svg',
+                colorFilter: ColorFilter.mode(
+                  isFavorite ? Colors.red : Colors.grey,
+                  BlendMode.srcIn,
+                ),
+              ),
+            );
+          },
         ),
         isBackable: true,
       ),
@@ -532,4 +559,3 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 }
-//

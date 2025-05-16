@@ -15,7 +15,6 @@ class BannerRepository {
       final response = await _apiClient.get(ApiConstants.banners);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
-        log(data[0].toString());
         return data.map((json) => Banner.fromJson(json)).toList();
       }
       throw Exception('Failed to load banners');

@@ -14,4 +14,7 @@ class PageRoutesName {
   static const productDetails = "/product-details";
   static const product = "/product";
   static const cart = "/cart";
+  static const address = "/address";
+  static const addAddress = "/add-address";
+  static const checkout = "/checkout";
 }

@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:super_mall/features/home/data/repository/banner_repository.dart';
 import 'core/network/api_client.dart';
+import 'core/network/api_constants.dart';
 import 'core/network/network_info.dart';
 import 'features/auth/login/data/repository/login_repository.dart';
 import 'features/auth/register/data/repository/register_repository.dart';
@@ -9,6 +10,9 @@ import 'features/auth/forget_password/data/repository/forget_password_repository
 import 'features/home/data/repository/category_repository.dart';
 import 'features/home/data/repository/home_repository.dart';
 import 'features/product/data/repository/product.dart';
+import 'features/user/address_info/data/repositories/address_repository.dart';
+import 'features/user/address_info/data/repositories/address_repository_impl.dart';
+import 'features/wishlist/data/wishlist_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -68,5 +72,17 @@ void _setupRepositories() {
   // Banner
   getIt.registerLazySingleton<BannerRepository>(
     () => BannerRepository(getIt<ApiClient>()),
+  );
+
+  // Address
+  getIt.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(
+      dio: getIt<ApiClient>().dio,
+    ),
+  );
+
+  // WishList
+  getIt.registerLazySingleton<WishListRepository>(
+    () => WishListRepository(),
   );
 }
