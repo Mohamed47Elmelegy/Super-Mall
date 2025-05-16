@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen>
                         const BannerCarousel(),
                         SizedBox(height: 20.h),
                         _searchField(),
+
                         if (homeState is HomeLoading)
                           const SkeletonHomeScreen()
                         else if (homeState is HomeError)
