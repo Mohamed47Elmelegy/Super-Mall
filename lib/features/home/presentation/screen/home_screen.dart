@@ -59,7 +59,8 @@ class _HomeScreenState extends State<HomeScreen>
               body: RefreshIndicator(
                 onRefresh: () async {
                   await context.read<HomeCubit>().loadHomeData();
-                  // await context.read<CategoryCubit>().getCategories();
+                  await context.read<CategoryCubit>().getCategories();
+                  await context.read<BannerCubit>().getBanners();
                 },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenPadding),
@@ -67,18 +68,21 @@ class _HomeScreenState extends State<HomeScreen>
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
-                        SizedBox(height: 20.h),
-                        const BannerCarousel(),
-                        SizedBox(height: 20.h),
-                        _searchField(),
-
                         if (homeState is HomeLoading)
                           const SkeletonHomeScreen()
                         else if (homeState is HomeError)
                           Center(child: Text(homeState.message))
                         else if (homeState is HomeLoaded)
-                          _buildDefaultContent(
-                              context, homeState, categoryState)
+                          Column(
+                            children: [
+                              SizedBox(height: 20.h),
+                              const BannerCarousel(),
+                              SizedBox(height: 20.h),
+                              _searchField(),
+                              _buildDefaultContent(
+                                  context, homeState, categoryState),
+                            ],
+                          )
                         else
                           const SizedBox(),
                       ],

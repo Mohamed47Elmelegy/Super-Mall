@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/features/cart/presentation/screen/cart_screen.dart';
+import 'package:super_mall/features/wishlist/presentation/screen/wishlist_screen.dart';
 
 import '../../../user/user_info/presentation/screen/user_info_screen.dart';
 
@@ -11,7 +13,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        icon: SvgPicture.asset('assets/vectors/user.svg'),
+        icon: SvgPicture.asset('assets/vectors/user-id-svgrepo-com.svg'),
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const UserInfoScreen()));
@@ -23,6 +25,16 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const CartScreen()));
+          },
+        ),
+        IconButton(
+          
+          icon: SvgPicture.asset('assets/vectors/fav-icon.svg'),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const WishlistScreen()));
           },
         ),
       ],

@@ -50,7 +50,7 @@ class CartSummary extends StatelessWidget {
               Navigator.pushNamed(context, PageRoutesName.checkout);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColorLight.primary,
+              backgroundColor: AppColorLight.button,
               padding: EdgeInsets.symmetric(vertical: 16.h),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.r),
@@ -61,7 +61,7 @@ class CartSummary extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: AppColorLight.textButton,
               ),
             ),
           ),

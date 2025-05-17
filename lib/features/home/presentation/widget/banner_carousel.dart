@@ -15,14 +15,22 @@ class BannerCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BannerCubit, BannerState>(
-      
       builder: (context, state) {
-
         if (state is BannerLoading) {
           return const SkeletonBannerCarousel();
         } else if (state is BannerError) {
           return Center(child: Text(state.message));
         } else if (state is BannerLoaded) {
+          // Determine how many active banners we need to display
+          int activeCount = 0;
+          final selectedBanners = state.banners.where((banner) {
+            if (banner.isActive == 1) {
+              activeCount++;
+              return true;
+            }
+            return false;
+          }).toList();
+          
           return CarouselSlider(
             options: CarouselOptions(
               height: 200.h,
@@ -34,7 +42,7 @@ class BannerCarousel extends StatelessWidget {
               autoPlayAnimationDuration: const Duration(milliseconds: 800),
               viewportFraction: 0.8,
             ),
-            items: state.banners.map((banner) {
+            items: selectedBanners.map((banner) {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(

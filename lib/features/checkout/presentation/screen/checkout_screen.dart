@@ -75,7 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           child: Column(
             children: [
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Column(
                   children: [
                     CheckoutPart(
@@ -157,7 +157,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
           ),
           Spacer(),
-          Text('EGP$price'),
+          Text('\$$price'),
         ],
       ),
     );

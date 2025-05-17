@@ -24,8 +24,8 @@ class BottomNavigationBarPrimary extends StatelessWidget {
       showUnselectedLabels: false,
       items: [
         BottomNavigationBarItem(
-          icon: SvgPicture.asset('assets/vectors/home.svg'),
-          activeIcon: Image.asset('assets/images/hometab_active.png'),
+          icon: Image.asset('assets/images/hometab_active.png'),
+          activeIcon: SvgPicture.asset('assets/vectors/home.svg'),
           label: 'Home',
         ),
         BottomNavigationBarItem(

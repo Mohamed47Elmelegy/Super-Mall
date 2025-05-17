@@ -26,7 +26,7 @@ class _CategoryScreenState extends State<CategoryScreen>
     super.initState();
     context
         .read<ProductCubit>()
-        .getProductsByCategory(widget.category.name['en'] ?? '');
+        .getProductsByCategory(widget.category.slug);
   }
 
   @override
@@ -41,7 +41,7 @@ class _CategoryScreenState extends State<CategoryScreen>
         onRefresh: () async {
           await context
               .read<ProductCubit>()
-              .getProductsByCategory(widget.category.name['en'] ?? '');
+              .getProductsByCategory(widget.category.slug);
         },
         child: BlocBuilder<ProductCubit, ProductState>(
           builder: (context, state) {

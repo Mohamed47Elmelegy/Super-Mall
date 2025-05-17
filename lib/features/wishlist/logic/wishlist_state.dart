@@ -1,9 +1,23 @@
-class WishListState {
-  final Set<String> wishListIds;
-  final bool loading;
+sealed class WishListState {
+  const WishListState();
+}
 
-  WishListState({
-    required this.wishListIds,
-    this.loading = false,
-  });
+class WishListInitial extends WishListState {
+  const WishListInitial();
+}
+
+class WishListLoading extends WishListState {
+  const WishListLoading();
+}
+
+class WishListLoaded extends WishListState {
+  final Set<String> wishListIds;
+
+  const WishListLoaded(this.wishListIds);
+}
+
+class WishListError extends WishListState {
+  final String message;
+
+  const WishListError(this.message);
 }

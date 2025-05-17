@@ -28,6 +28,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     return Scaffold(
       appBar: AppbarBackTitle(),
       body: RefreshIndicator(
+        backgroundColor: AppColorLight.primary.withValues(),
+        color: Colors.white,
+        strokeWidth: 2.0,
         onRefresh: () async {
           await context.read<CategoryCubit>().getCategories();
         },

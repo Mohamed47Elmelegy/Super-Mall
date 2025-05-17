@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../../core/theme/app_color/app_color_light.dart';
 
 class ProductImage extends StatelessWidget {
   final String imageUrl;
@@ -31,7 +34,11 @@ class ProductImage extends StatelessWidget {
           width: width,
           height: height,
           color: Colors.grey[200],
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary)),
         );
       },
     );

@@ -60,8 +60,8 @@ class _ProductScreenState extends State<ProductScreen> {
         reverseLeading:
             BlocBuilder<wishlist.WishListCubit, wishlist.WishListState>(
           builder: (context, state) {
-            final isFavorite = state.wishListIds
-                .contains(widget.product?.code ?? widget.productCode);
+            final isFavorite = state is wishlist.WishListLoaded &&
+                state.wishListIds.contains(widget.product?.code ?? widget.productCode);
             return GestureDetector(
               onTap: () {
                 final productId = widget.product?.code ?? widget.productCode;

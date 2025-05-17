@@ -63,7 +63,8 @@ class Item extends StatelessWidget {
                       child: BlocBuilder<WishListCubit, WishListState>(
                         builder: (context, state) {
                           final isFavorite =
-                              state.wishListIds.contains(product.code);
+                              state is WishListLoaded &&
+                                  state.wishListIds.contains(product.code);
                           return GestureDetector(
                             onTap: () {
                               context

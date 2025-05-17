@@ -10,7 +10,7 @@ class BannerRepository {
 
   Future<List<Banner>> getBanners() async {
     try {
-      //sora seeds/banners/slide-gocery2.jpg laz
+      
       final response = await _apiClient.get(ApiConstants.banners);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/user/address_info/presentation/cubit/address_cubit.dart';
 import 'package:super_mall/features/user/address_info/presentation/cubit/address_state.dart';
@@ -33,7 +34,12 @@ class AddressInfoScreen extends StatelessWidget {
         child: BlocBuilder<AddressCubit, AddressState>(
           builder: (context, state) {
             if (state is AddressLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                  child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary));
             } else if (state is AddressError) {
               return Center(child: Text(state.message));
             } else if (state is AddressLoadedSucess) {
@@ -131,7 +137,7 @@ class AddressInfoScreen extends StatelessWidget {
                   }
                 },
                 child: Text(
-                  selectMode ? 'اختيار' : 'Edit',
+                  selectMode ? 'Choose' : 'Edit',
                   style: TextStyle(
                     color: selectMode
                         ? Colors.green

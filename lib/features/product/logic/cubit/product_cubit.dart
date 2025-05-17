@@ -18,16 +18,11 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> getProductsByCategory(String categoryEn) async {
+  Future<void> getProductsByCategory(String categorySlug) async {
     emit(ProductLoading());
     try {
-      final allProducts = await repository.fetchAllProducts();
-      final filteredProducts = allProducts
-          .where((product) =>
-              product.category['en'] == categoryEn ||
-              product.category['ar'] == categoryEn)
-          .toList();
-      emit(ProductLoaded(filteredProducts));
+      final response = await repository.fetchProductsByCategory(categorySlug);
+      emit(ProductLoaded(response));
     } catch (e) {
       emit(ProductError(e.toString()));
     }

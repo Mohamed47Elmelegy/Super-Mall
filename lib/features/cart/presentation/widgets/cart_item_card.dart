@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../../core/theme/app_color/app_color_light.dart';
 import '../../data/model/cart_item.dart';
@@ -29,7 +30,11 @@ class CartItemCard extends StatelessWidget {
             final cartItem = state.item;
             return _buildCard(context, cartItem);
           } else if (state is CartItemLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return  Center(child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary));
           } else if (state is CartItemError) {
             return Text('Error: ${state.message}');
           }
@@ -189,7 +194,7 @@ class CartItemCard extends StatelessWidget {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColorLight.primary,
+        color: AppColorLight.button,
         borderRadius: BorderRadius.circular(4.r),
       ),
       child: InkWell(
@@ -200,7 +205,7 @@ class CartItemCard extends StatelessWidget {
           child: Icon(
             icon,
             size: 16.r,
-            color: Colors.black,
+            color: AppColorLight.textButton,
           ),
         ),
       ),

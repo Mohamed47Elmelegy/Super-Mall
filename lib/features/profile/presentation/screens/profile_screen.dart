@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import '../../../../core/routes/page_routes_name.dart';
 import '../cubit/profile_cubit.dart';
 import '../../data/models/profile_model.dart';
@@ -28,7 +30,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary));
           } else if (state is ProfileLoaded) {
             return _buildProfileContent(context, state.profile);
           } else if (state is ProfileError) {

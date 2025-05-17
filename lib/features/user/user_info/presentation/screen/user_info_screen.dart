@@ -9,7 +9,7 @@ import 'package:super_mall/features/user/address_info/presentation/screen/addres
 import 'package:super_mall/features/user/payment_info/presentation/screen/payment_info_screen.dart';
 import 'package:super_mall/features/user/user_info/data/model/user_model.dart';
 import 'package:super_mall/features/user/user_info/presentation/screen/user_info_edit_screen.dart';
-import 'package:super_mall/features/user/wishlist/presentation/screen/wishlist_screen.dart';
+import 'package:super_mall/features/wishlist/presentation/screen/wishlist_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
@@ -60,22 +60,22 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               child: Column(
                 children: [
                   _buildAvatarImage(),
-                  SizedBox(height: 10.h),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, PageRoutesName.userInfoEdit);
-                      // تأكد من وجود route باسم /profile أو استخدم MaterialPageRoute
-                    },
-                    child: Text(
-                      'عرض الملف الشخصي',
-                      style: TextStyle(
-                        color: AppColorLight.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
+                  // SizedBox(height: 10.h),
+                  // InkWell(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, PageRoutesName.userInfoEdit);
+                  //     // تأكد من وجود route باسم /profile أو استخدم MaterialPageRoute
+                  //   },
+                  //   child: Text(
+                  //     'عرض الملف الشخصي',
+                  //     style: TextStyle(
+                  //       color: AppColorLight.primary,
+                  //       fontWeight: FontWeight.bold,
+                  //       fontSize: 16.sp,
+                  //       decoration: TextDecoration.underline,
+                  //     ),
+                  //   ),
+                  // ),
                   SizedBox(height: 20.h),
                   _buildUserInfo(context),
                   SizedBox(height: 30.h),

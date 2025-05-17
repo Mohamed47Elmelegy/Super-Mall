@@ -4,6 +4,7 @@ class Banner {
   final String body;
   final String buttonText;
   final String url;
+  final int? isActive;
   final String image;
   final String? link;
   final DateTime createdAt;
@@ -16,6 +17,7 @@ class Banner {
     required this.buttonText,
     required this.url,
     required this.image,
+    this.isActive,
     this.link,
     required this.createdAt,
     required this.updatedAt,
@@ -29,6 +31,7 @@ class Banner {
       buttonText: json['button_text'],
       url: json['url'],
       image: json['image'],
+      isActive: json['is_active'],
       link: json['link'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),

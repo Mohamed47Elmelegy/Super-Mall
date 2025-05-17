@@ -18,6 +18,8 @@ class SkeletonHomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Banner
+              const SkeletonBannerCarousel(),
               SizedBox(height: 20.h),
               // Search bar
               Container(
@@ -382,11 +384,11 @@ class SkeletonBannerCarousel extends StatelessWidget {
         itemCount: 3,
         itemBuilder: (context, index) {
           return Container(
-            width: MediaQuery.of(context).size.width * 0.8,
+            width: MediaQuery.of(context).size.width * 0.72,
             margin: EdgeInsets.symmetric(horizontal: 5.w),
             decoration: BoxDecoration(
               color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(15.r),
+              borderRadius: BorderRadius.all(Radius.circular(15.r)),
             ),
           );
         },

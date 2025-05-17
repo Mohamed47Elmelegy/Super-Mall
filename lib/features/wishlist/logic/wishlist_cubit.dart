@@ -8,26 +8,37 @@ class WishListCubit extends Cubit<WishListState> {
   final WishListRepository repo;
   final int userId;
 
-  WishListCubit(this.repo, this.userId) : super(WishListState(wishListIds: {}));
+  WishListCubit(this.repo, this.userId) : super(const WishListInitial());
 
   Future<void> loadWishList() async {
-    emit(WishListState(wishListIds: state.wishListIds, loading: true));
-    final ids = await repo.getWishListIds(userId);
-    emit(WishListState(wishListIds: ids.toSet()));
+    emit(const WishListLoading());
+    try {
+      final ids = await repo.getWishListIds(userId);
+      emit(WishListLoaded(ids.toSet()));
+    } catch (e) {
+      emit(WishListError(e.toString()));
+    }
   }
 
   Future<void> toggleWish(String productId) async {
     log('toggleWish called for productId: $productId');
-    final isFav = state.wishListIds.contains(productId);
-    if (isFav) {
-      log('Removing from wishlist');
-      await repo.removeFromWishList(userId, productId);
-      emit(WishListState(
-          wishListIds: {...state.wishListIds}..remove(productId)));
-    } else {
-      log('Adding to wishlist');
-      await repo.addToWishList(userId, productId);
-      emit(WishListState(wishListIds: {...state.wishListIds}..add(productId)));
+
+    if (state is! WishListLoaded) return;
+    final currentState = state as WishListLoaded;
+    final isFav = currentState.wishListIds.contains(productId);
+
+    try {
+      if (isFav) {
+        log('Removing from wishlist');
+        await repo.removeFromWishList(userId, productId);
+        emit(WishListLoaded({...currentState.wishListIds}..remove(productId)));
+      } else {
+        log('Adding to wishlist');
+        await repo.addToWishList(userId, productId);
+        emit(WishListLoaded({...currentState.wishListIds}..add(productId)));
+      }
+    } catch (e) {
+      emit(WishListError(e.toString()));
     }
   }
 }

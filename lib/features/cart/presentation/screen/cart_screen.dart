@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../../core/theme/app_color/app_color_light.dart';
 import '../../data/model/cart.dart';
@@ -37,9 +38,17 @@ class CartScreen extends StatelessWidget {
         builder: (context, state) {
           if (state is CartInitial) {
             context.read<CartCubit>().loadCart();
-            return const Center(child: CircularProgressIndicator());
+            return  Center(child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary));
           } else if (state is CartLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: SpinKitWaveSpinner(
+                      size: 120,
+                      trackColor: Colors.green[100]!,
+                      waveColor: Colors.green[300]!,
+                      color: AppColorLight.primary));
           } else if (state is CartLoaded) {
             if (state.cart.items.isEmpty) {
               return const CartEmpty();

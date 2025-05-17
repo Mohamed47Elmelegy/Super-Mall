@@ -1,56 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/routes/page_routes_name.dart';
+import '../../../../shared/widget/empty_pages.dart';
+import '../../../home/presentation/screen/categories_screen.dart';
 
 class ProductEmptyScreen extends StatelessWidget {
   const ProductEmptyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/cart_empty.png',
-            width: 100.w,
-            height: 100.h,
+    return EmptyPages(
+      imageType: 'svg',
+      image: 'assets/vectors/search-shopping-svgrepo-com.svg',
+      title: 'No products found',
+      description: 'Browse other categories, hope found what you want',
+      buttonText: 'Explore Categories',
+      onPressed: () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const CategoriesScreen(),
           ),
-          SizedBox(height: 16.h),
-          Text(
-            'No products found',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            '',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey,
-            ),
-          ),
-          SizedBox(height: 24.h),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: AppColorLight.button,
-          //   ),
-          //   onPressed: () {
-          //     // Navigate to products or home screen
-          //     Navigator.of(context).pushReplacementNamed(PageRoutesName.home);
-          //   },
-          //   child: Text(
-          //     'Explore Products',
-          //     style: TextStyle(
-          //       color: AppColorLight.textButton,
-          //       fontSize: 16.sp,
-          //       fontWeight: FontWeight.w400,
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
+          (route) => route.isFirst,
+        );
+      },
     );
   }
 }

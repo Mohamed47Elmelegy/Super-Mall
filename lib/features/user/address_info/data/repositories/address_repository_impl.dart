@@ -17,7 +17,8 @@ class AddressRepositoryImpl implements AddressRepository {
       final response = await dio.get('/addresses');
       log('API status: ${response.statusCode}, data: ${response.data}');
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = response.data;
+        final Map<String, dynamic> jsonResponse = response.data;
+        final List<dynamic> jsonList = jsonResponse['data'] as List<dynamic>;
         final addresses =
             jsonList.map((json) => AddressModel.fromJson(json)).toList();
         return Right(addresses);
