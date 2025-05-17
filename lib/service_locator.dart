@@ -59,6 +59,7 @@ void _setupRepositories() {
     () => HomeRepository(
       getIt<ProductRepository>(),
       getIt<CategoryRepository>(),
+      //getIt<BannerRepository>(),
     ),
   );
 

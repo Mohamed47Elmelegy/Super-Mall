@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/model/banner.dart';
+import '../../data/model/banner_model.dart';
 import '../../data/repository/banner_repository.dart';
 
 // States

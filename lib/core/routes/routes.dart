@@ -15,7 +15,7 @@ import 'package:super_mall/features/user/user_info/presentation/screen/user_info
 import '../../features/checkout/presentation/screen/checkout_screen.dart';
 import '../../features/product/data/model/product.dart';
 import '../../features/product/presentation/screen/product_screen.dart';
-import '../../features/home/data/model/category.dart';
+import '../../features/home/data/model/category_model.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/user/address_info/presentation/screen/add_address_info_screen.dart';
 import '../../features/user/address_info/presentation/screen/address_info_screen.dart';

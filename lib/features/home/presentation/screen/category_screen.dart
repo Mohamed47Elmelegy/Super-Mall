@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:super_mall/features/home/data/model/category.dart';
+import 'package:super_mall/features/home/data/model/category_model.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'package:super_mall/features/product/logic/cubit/product_state.dart';
 import 'package:super_mall/shared/widget/animated_product_list.dart';

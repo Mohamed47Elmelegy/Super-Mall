@@ -5,7 +5,7 @@ import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../../../core/routes/page_routes_name.dart';
-import '../cubit/category_cubit.dart';
+import '../../logic/cubit/category_cubit.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});

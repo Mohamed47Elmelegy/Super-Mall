@@ -42,12 +42,9 @@ class AddressRepositoryImpl implements AddressRepository {
   }
 
   @override
-  Future<Either<Failure, AddressModel>> createAddress(
-      AddressModel address) async {
+  Future<Either<Failure, AddressModel>> createAddress(AddressModel address) async {
     try {
-      final response = await dio.post(
-        '/addresses',
-        data: address.toJson(),
+      final response = await dio.post('/addresses', data: address.toJson(),
       );
 
       if (response.statusCode == 201) {

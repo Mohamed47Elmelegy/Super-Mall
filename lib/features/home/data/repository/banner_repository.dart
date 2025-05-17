@@ -1,7 +1,7 @@
 
 import 'package:super_mall/core/network/api_client.dart';
 import 'package:super_mall/core/network/api_constants.dart';
-import '../model/banner.dart';
+import '../model/banner_model.dart';
 
 class BannerRepository {
   final ApiClient _apiClient;

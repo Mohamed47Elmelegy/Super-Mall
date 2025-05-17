@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/home/presentation/screen/categories_screen.dart';
 import 'package:super_mall/features/home/presentation/widget/home_appbar.dart';
@@ -9,11 +10,12 @@ import 'package:super_mall/shared/widget/bottomnavigationbar_primary.dart';
 import 'package:super_mall/shared/widget/item.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
 import '../../../../core/routes/page_routes_name.dart';
-import '../../data/model/category.dart';
+import '../../../user/address_info/presentation/cubit/address_cubit.dart';
+import '../../data/model/category_model.dart';
 import '../../logic/cubit/banner_cubit.dart';
-import '../cubit/category_cubit.dart';
-import '../cubit/home_cubit.dart';
-import '../cubit/home_state.dart';
+import '../../logic/cubit/category_cubit.dart';
+import '../../logic/cubit/home_cubit.dart';
+import '../../logic/cubit/home_state.dart';
 import '../widget/banner_carousel.dart';
 import '../screen/products_list_screen.dart';
 
@@ -56,7 +58,22 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: (p0) {},
               ),
               appBar: HomeAppbar(),
-              body: RefreshIndicator(
+              body: EasyRefresh(
+                // header: ClassicHeader(
+                //   dragText: 'Pull to refresh',
+                //   armedText: 'Release to refresh',
+                //   readyText: 'Refreshing...',
+                //   processingText: 'Refreshing...',
+                //   processedText: 'Refresh completed',
+                //   noMoreText: 'No more data',
+                //   failedText: 'Refresh failed',
+                //   messageText: 'Last updated at %T',
+                //   messageStyle: TextStyle(
+                //     fontSize: 12,
+                //     color: AppColorLight.primary,
+                //   ),
+                //   backgroundColor: AppColorLight.primary,
+                // ),
                 onRefresh: () async {
                   await context.read<HomeCubit>().loadHomeData();
                   await context.read<CategoryCubit>().getCategories();

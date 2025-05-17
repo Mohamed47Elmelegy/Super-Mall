@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/model/category.dart';
+import '../../data/model/category_model.dart';
 import '../../data/repository/category_repository.dart';
 
 part 'category_state.dart';

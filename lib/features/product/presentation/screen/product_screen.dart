@@ -35,8 +35,6 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   late int quantity;
-  Offset cartIconOffset =
-      const Offset(16, 100); // initial position (right, bottom)
 
   @override
   void initState() {
@@ -61,22 +59,57 @@ class _ProductScreenState extends State<ProductScreen> {
             BlocBuilder<wishlist.WishListCubit, wishlist.WishListState>(
           builder: (context, state) {
             final isFavorite = state is wishlist.WishListLoaded &&
-                state.wishListIds.contains(widget.product?.code ?? widget.productCode);
-            return GestureDetector(
-              onTap: () {
-                final productId = widget.product?.code ?? widget.productCode;
-                context.read<wishlist.WishListCubit>().toggleWish(productId);
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.r),
-                child: SvgPicture.asset(
-                  isFavorite
-                      ? 'assets/vectors/fav-filled.svg'
-                      : 'assets/vectors/fav-icon.svg',
-                  width: 24.w,
-                  height: 24.h,
+                state.wishListIds
+                    .contains(widget.product?.code ?? widget.productCode);
+            return Row(
+              children: [
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    IconButton(
+                      icon: SvgPicture.asset('assets/vectors/bag-cart.svg'),
+                      onPressed: () {
+                        Navigator.pushNamed(context, PageRoutesName.cart);
+                      },
+                    ),
+                    if (cartCount > 0)
+                      Container(
+                        padding: EdgeInsets.all(4.r),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$cartCount',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    final productId =
+                        widget.product?.code ?? widget.productCode;
+                    context
+                        .read<wishlist.WishListCubit>()
+                        .toggleWish(productId);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.r),
+                    child: SvgPicture.asset(
+                      isFavorite
+                          ? 'assets/vectors/fav-filled.svg'
+                          : 'assets/vectors/fav-icon.svg',
+                      width: 24.w,
+                      height: 24.h,
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -98,38 +131,6 @@ class _ProductScreenState extends State<ProductScreen> {
                     return const SizedBox();
                   },
                 ),
-          if (cartCount > 0)
-            Positioned(
-              right: cartIconOffset.dx,
-              bottom: cartIconOffset.dy,
-              child: Draggable(
-                feedback: _buildCartIcon(cartCount),
-                childWhenDragging: const SizedBox.shrink(),
-                onDragEnd: (details) {
-                  setState(() {
-                    final RenderBox renderBox =
-                        context.findRenderObject() as RenderBox;
-                    final Size size = renderBox.size;
-                    double newRight =
-                        size.width - details.offset.dx - 56; // 56 = icon size
-                    double newBottom = size.height -
-                        details.offset.dy -
-                        56 -
-                        MediaQuery.of(context).padding.top;
-                    cartIconOffset = Offset(
-                      newRight.clamp(0, size.width - 56),
-                      newBottom.clamp(0, size.height - 56),
-                    );
-                  });
-                },
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, PageRoutesName.cart);
-                  },
-                  child: _buildCartIcon(cartCount),
-                ),
-              ),
-            ),
         ],
       ),
       bottomNavigationBar: widget.product != null
@@ -154,6 +155,38 @@ class _ProductScreenState extends State<ProductScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 20.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Home > ',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    Text(
+                      '${product.category['en']} > ',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  product.name['en'] ?? '',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
             CarouselSlider(
               options: CarouselOptions(
                 height: MediaQuery.of(context).size.height * 0.35,
@@ -173,20 +206,23 @@ class _ProductScreenState extends State<ProductScreen> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 10.h),
             Text(product.name['en'] ?? '',
                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
             SizedBox(height: 10.h),
-            Text('EGP ${product.price}',
+            if (product.isBest) ProductsBadge('Best Seller', Colors.orange),
+            if (product.isNew) ProductsBadge('New', Colors.green),
+            if (product.isFeatured) ProductsBadge('Featured', Colors.blue),
+            if (product.isHot) ProductsBadge('Hot', Colors.red),
+
+            Text('\$ ${product.price}',
                 style:
                     TextStyle(fontSize: 18.sp, color: AppColorLight.primary)),
             SizedBox(height: 10.h),
-            Text('Brand: ${product.brand['en'] ?? ''}'),
-            Text('Category: ${product.category['en'] ?? ''}'),
-            Text('Quantity: ${product.quantity}'),
-            SizedBox(height: 20.h),
             Text(product.description['en'] ?? '',
                 style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
+            SizedBox(height: 20.h),
+            _buildQuantitySelector(product, quantity),
             SizedBox(height: 20.h),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -275,40 +311,44 @@ class _ProductScreenState extends State<ProductScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20.h),
-            Text('Shipping & Returns'),
-            SizedBox(height: 10.h),
-            Text('Free standard shipping and free 60-day returns',
-                style: TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
-            SizedBox(height: 20.h),
-            _buildSizeSelector(),
-            SizedBox(height: 10.h),
-            _buildColorSelector(),
-            SizedBox(height: 10.h),
-            quantity > 0
-                ? _buildQuantitySelector(product, quantity)
-                : SizedBox.shrink(),
-            SizedBox(height: 10.h),
-            Text(
-              'Built for life and made to last, this full-zip corduroy jacket is part of our Nike Life collection. The spacious fit gives you plenty of room to layer underneath, while the soft corduroy keeps it casual and timeless.',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text('4.5 Ratings'),
-            Text(
-              '213 Reviews',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey[600],
-              ),
-            ),
-            _reviewCard(),
-            _reviewCard(),
+            // SizedBox(height: 20.h),
+            // Text('4.5 Ratings'),
+            // Text(
+            //   '213 Reviews',
+            //   style: TextStyle(
+            //     fontSize: 14.sp,
+            //     color: Colors.grey[600],
+            //   ),
+            // ),
+            // _reviewCard(),
+            // _reviewCard(),
           ],
         ),
+      ),
+    );
+  }
+
+  Container ProductsBadge(String text, Color color) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10.h),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              border: Border.all(color: color ?? AppColorLight.primary),
+              borderRadius: BorderRadius.circular(3.r),
+            ),
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w700,
+                color: color ?? AppColorLight.primary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -376,7 +416,6 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildQuantitySelector(Product product, int quantity) {
-    if (quantity == 0) return SizedBox.shrink();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
       decoration: BoxDecoration(
@@ -390,13 +429,13 @@ class _ProductScreenState extends State<ProductScreen> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColorLight.primary,
+              color: AppColorLight.button,
             ),
             child: IconButton(
               onPressed: () {
                 onAdd(product, quantity);
               },
-              icon: Icon(Icons.add),
+              icon: Icon(Icons.add, color: AppColorLight.textButton),
             ),
           ),
           Container(
@@ -409,13 +448,13 @@ class _ProductScreenState extends State<ProductScreen> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColorLight.primary,
+              color: AppColorLight.button,
             ),
             child: IconButton(
               onPressed: () {
                 onRemove(product, quantity);
               },
-              icon: Icon(Icons.remove),
+              icon: Icon(Icons.remove, color: AppColorLight.textButton),
             ),
           ),
         ],
@@ -515,7 +554,7 @@ class _ProductScreenState extends State<ProductScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'EGP${(product.price * (quantity == 0 ? 1 : quantity)).toStringAsFixed(0)}',
+                '\$ ${(product.price * (quantity == 0 ? 1 : quantity)).toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 15.sp,
                   color: AppColorLight.textButton,
@@ -534,28 +573,6 @@ class _ProductScreenState extends State<ProductScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCartIcon(int cartCount) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        CircleAvatar(
-          radius: 28,
-          backgroundColor: const Color(0xFF33313B),
-          child: Image.asset('assets/images/cart.png', width: 32, height: 32),
-        ),
-        if (cartCount > 0)
-          CircleAvatar(
-            radius: 10,
-            backgroundColor: Colors.red,
-            child: Text(
-              '$cartCount',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-      ],
     );
   }
 }

@@ -7,7 +7,7 @@ import 'package:super_mall/core/services/shared_preferences_sengltion.dart';
 import 'package:super_mall/core/theme/theme_data/theme_data_light.dart';
 import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:super_mall/features/home/data/repository/banner_repository.dart';
-import 'package:super_mall/features/home/presentation/cubit/category_cubit.dart';
+import 'package:super_mall/features/home/logic/cubit/category_cubit.dart';
 import 'package:super_mall/features/profile/domain/repositories/profile_repository.dart';
 import 'package:super_mall/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:super_mall/service_locator.dart';
@@ -17,7 +17,7 @@ import 'package:super_mall/features/auth/register/logic/cubit/register_cubit.dar
 import 'package:super_mall/features/auth/login/data/repository/login_repository.dart';
 import 'package:super_mall/features/auth/register/data/repository/register_repository.dart';
 import 'package:super_mall/features/home/data/repository/home_repository.dart';
-import 'package:super_mall/features/home/presentation/cubit/home_cubit.dart';
+import 'package:super_mall/features/home/logic/cubit/home_cubit.dart';
 import 'package:super_mall/features/product/data/repository/product.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'features/home/data/repository/category_repository.dart';

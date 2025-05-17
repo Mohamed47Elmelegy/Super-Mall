@@ -8,11 +8,64 @@ import 'package:super_mall/features/user/address_info/presentation/cubit/address
 import 'package:super_mall/features/user/address_info/presentation/screen/add_address_info_screen.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
 import 'package:super_mall/shared/widget/button_primary.dart';
+import 'package:super_mall/shared/widget/empty_pages.dart';
 import '../../data/models/address_model.dart';
 
 class AddressInfoScreen extends StatelessWidget {
   final bool selectMode;
   const AddressInfoScreen({super.key, this.selectMode = false});
+
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, int addressId) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Delete Address',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete this address?',
+            style: TextStyle(
+              fontSize: 16.sp,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: AppColorLight.textButton,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<AddressCubit>().deleteAddress(addressId);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                'Delete',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +76,7 @@ class AddressInfoScreen extends StatelessWidget {
       body: BlocListener<AddressCubit, AddressState>(
         listenWhen: (previous, current) => current is AddressLoadedSucess,
         listener: (context, state) {
-          if (state is AddressLoadedSucess && state.addresses.isEmpty) {
-            Future.microtask(() {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No addresses found')),
-              );
-            });
-          }
+        
         },
         child: BlocBuilder<AddressCubit, AddressState>(
           builder: (context, state) {
@@ -43,6 +90,23 @@ class AddressInfoScreen extends StatelessWidget {
             } else if (state is AddressError) {
               return Center(child: Text(state.message));
             } else if (state is AddressLoadedSucess) {
+              if (state.addresses.isEmpty) {
+                return EmptyPages(
+                  imageType: 'svg',
+                  image: 'assets/vectors/location-plus-svgrepo-com.svg',
+                  title: 'No Addresses',
+                  description: 'You haven\'t added any addresses yet',
+                  buttonText: 'Add New Address',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddAddressInfoScreen(),
+                      ),
+                    );
+                  },
+                );
+              }
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
                 child: Column(
@@ -149,7 +213,7 @@ class AddressInfoScreen extends StatelessWidget {
               if (!selectMode)
                 InkWell(
                   onTap: () {
-                    context.read<AddressCubit>().deleteAddress(address.id);
+                    _showDeleteConfirmationDialog(context, address.id);
                   },
                   child: Text(
                     'Delete',

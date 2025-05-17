@@ -4,16 +4,12 @@ import 'package:super_mall/features/user/user_info/data/model/user_model.dart';
 import 'package:super_mall/core/constants/shared_prefs.dart';
 import 'package:super_mall/core/services/shared_preferences_sengltion.dart';
 
-// حفظ بيانات المستخدم في SharedPreferences
 Future<void> saveUserData(UserModel user) async {
-  // حفظ البيانات كـ JSON string
   final jsonString = jsonEncode(user.toJson());
   await Prefs.setString(SharedPrefs.userData, jsonString);
 
-  // حفظ العناصر الفردية للوصول السريع
   final userData = user.toJson();
 
-  // حفظ جميع بيانات المستخدم المتوفرة
   for (final entry in userData.entries) {
     final key = entry.key;
     final value = entry.value;
@@ -55,7 +51,6 @@ UserModel? getUserData() {
   }
 }
 
-// حذف بيانات المستخدم (تسجيل الخروج)
 Future<void> clearUserData() async {
   await Prefs.remove(SharedPrefs.userData);
   await Prefs.remove(SharedPrefs.token);
@@ -66,7 +61,6 @@ Future<void> clearUserData() async {
   await Prefs.remove(SharedPrefs.userImage);
 }
 
-// التحقق ما إذا كان المستخدم مسجل الدخول
 bool isUserLoggedIn() {
   final token = Prefs.getString(SharedPrefs.token);
   return token != null && token.isNotEmpty;
