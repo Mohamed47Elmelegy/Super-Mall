@@ -8,11 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiClient {
   late final Dio _dio;
 
+  Dio get dio => _dio;
+
   ApiClient() {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        headers: ApiConstants.headers,
+        headers: ApiConstants.headers(''),
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),

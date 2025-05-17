@@ -21,16 +21,12 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> getProductsByCategory(String categoryEn) async {
     emit(ProductLoading());
     try {
-      // جلب كل المنتجات الأول
-      final allProducts = await repository.fetchProducts();
-
-      // فلترة المنتجات client-side
+      final allProducts = await repository.fetchAllProducts();
       final filteredProducts = allProducts
           .where((product) =>
               product.category['en'] == categoryEn ||
               product.category['ar'] == categoryEn)
           .toList();
-
       emit(ProductLoaded(filteredProducts));
     } catch (e) {
       emit(ProductError(e.toString()));
@@ -50,6 +46,26 @@ class ProductCubit extends Cubit<ProductState> {
       );
 
       emit(ProductDetailLoaded(product));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+    }
+  }
+
+  Future<void> getTopSellingProducts() async {
+    emit(ProductLoading());
+    try {
+      final products = await repository.getTopSellingProducts();
+      emit(ProductLoaded(products));
+    } catch (e) {
+      emit(ProductError(e.toString()));
+    }
+  }
+
+  Future<void> getNewProducts() async {
+    emit(ProductLoading());
+    try {
+      final products = await repository.getNewProducts();
+      emit(ProductLoaded(products));
     } catch (e) {
       emit(ProductError(e.toString()));
     }

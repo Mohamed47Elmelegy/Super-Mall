@@ -20,6 +20,10 @@ import 'package:super_mall/features/product/data/repository/product.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
 import 'features/home/data/repository/category_repository.dart';
 import 'features/home/logic/cubit/banner_cubit.dart';
+import 'features/user/address_info/data/repositories/address_repository.dart';
+import 'features/user/address_info/presentation/cubit/address_cubit.dart';
+import 'package:super_mall/features/wishlist/logic/wishlist_cubit.dart';
+import 'package:super_mall/features/wishlist/data/wishlist_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +61,8 @@ class MainApp extends StatelessWidget {
               create: (context) => HomeCubit(getIt<HomeRepositoryBase>()),
             ),
             BlocProvider<ProductCubit>(
-              create: (context) => ProductCubit(getIt<ProductRepository>()),
+              create: (context) =>
+                  ProductCubit(getIt<ProductRepository>())..getProducts(),
             ),
             BlocProvider<CategoryCubit>(
               create: (context) => CategoryCubit(getIt<CategoryRepository>()),
@@ -67,6 +72,16 @@ class MainApp extends StatelessWidget {
             ),
             BlocProvider<BannerCubit>(
               create: (context) => BannerCubit(getIt<BannerRepository>()),
+            ),
+            BlocProvider<AddressCubit>(
+              create: (context) =>
+                  AddressCubit(getIt<AddressRepository>())..getAddresses(),
+            ),
+            BlocProvider<WishListCubit>(
+              create: (context) => WishListCubit(
+                getIt<WishListRepository>(),
+                1, // Default userId
+              )..loadWishList(),
             ),
           ],
           child: MaterialApp(

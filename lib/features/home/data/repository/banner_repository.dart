@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:super_mall/core/network/api_client.dart';
 import 'package:super_mall/core/network/api_constants.dart';

@@ -15,6 +15,7 @@ import '../cubit/category_cubit.dart';
 import '../cubit/home_cubit.dart';
 import '../cubit/home_state.dart';
 import '../widget/banner_carousel.dart';
+import '../screen/products_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -97,9 +98,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildDefaultContent(
       BuildContext context, HomeLoaded homeState, CategoryState categoryState) {
-    // فلترة المنتجات حسب القسم
-    final topSelling = homeState.homeData.topSelling;
-    final newIn = homeState.homeData.newProducts;
+    final topSelling = homeState.homeData.topSelling.take(5).toList();
+    final newIn = homeState.homeData.newProducts.take(5).toList();
 
     return Column(
       children: [
@@ -111,7 +111,17 @@ class _HomeScreenState extends State<HomeScreen>
         SizedBox(height: 20.h),
         _buildCategoriesSection(categoryState),
         SizedBox(height: 20.h),
-        _itemsHeader('Top Selling', 'See All', action: () {}),
+        _itemsHeader('Top Selling', 'See All', action: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductsListScreen(
+                title: 'Top Selling',
+                type: 'topSelling',
+              ),
+            ),
+          );
+        }),
         SizedBox(height: 10.h),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -121,7 +131,17 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         SizedBox(height: 20.h),
-        _itemsHeader('New In', 'See All', action: () {}),
+        _itemsHeader('New In', 'See All', action: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductsListScreen(
+                title: 'New In',
+                type: 'newIn',
+              ),
+            ),
+          );
+        }),
         SizedBox(height: 10.h),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

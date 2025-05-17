@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/routes/page_routes_name.dart';
 import '../../../../core/theme/app_color/app_color_light.dart';
 import '../../data/model/cart.dart';
 
@@ -46,7 +47,7 @@ class CartSummary extends StatelessWidget {
           SizedBox(height: 16.h),
           ElevatedButton(
             onPressed: () {
-              // Navigate to checkout
+              Navigator.pushNamed(context, PageRoutesName.checkout);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColorLight.primary,

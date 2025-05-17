@@ -66,10 +66,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   UserInfoToGo(
                       title: 'Address',
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return AddressInfoScreen();
-                        }));
+                        Navigator.pushNamed(
+                          context,
+                          PageRoutesName.address,
+                        );
                       }),
                   SizedBox(height: 10.h),
                   UserInfoToGo(
