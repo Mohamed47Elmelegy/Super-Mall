@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:super_mall/features/home/data/model/category.dart';
 import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
-import 'package:super_mall/shared/widget/item.dart';
+import 'package:super_mall/features/product/logic/cubit/product_state.dart';
+import 'package:super_mall/shared/widget/animated_product_list.dart';
 import 'package:super_mall/shared/widget/skeleton_screen.dart';
-
-import '../../../product/logic/cubit/product_state.dart';
-import '../../data/model/category.dart'; // لو تستخدم getIt
+import 'package:super_mall/features/product/presentation/screen/product_empty_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   final Category category;
 
-  const CategoryScreen({super.key, required this.category});
+  const CategoryScreen({
+    super.key,
+    required this.category,
+  });
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -18,18 +21,12 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen>
     with AutomaticKeepAliveClientMixin {
-  bool _dataFetched = false;
-
   @override
   void initState() {
     super.initState();
-    // جلب المنتجات الخاصة بالقسم مرة واحدة فقط
-    if (!_dataFetched) {
-      context
-          .read<ProductCubit>()
-          .getProductsByCategory(widget.category.name['en'] ?? '');
-      _dataFetched = true;
-    }
+    context
+        .read<ProductCubit>()
+        .getProductsByCategory(widget.category.name['en'] ?? '');
   }
 
   @override
@@ -54,23 +51,17 @@ class _CategoryScreenState extends State<CategoryScreen>
               return Center(child: Text(state.message));
             } else if (state is ProductLoaded) {
               if (state.products.isEmpty) {
-                return Center(child: Text('No products found'));
+                return const ProductEmptyScreen();
               }
-              return GridView.builder(
-                padding: EdgeInsets.all(16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.65,
-                ),
-                itemCount: state.products.length,
-                itemBuilder: (context, index) {
-                  return Item(product: state.products[index]);
-                },
+              return AnimatedProductList(
+                products: state.products,
+                childAspectRatio: 0.65,
+                crossAxisCount: 2,
+                spacing: 16,
+                padding: const EdgeInsets.all(16),
               );
             }
-            return SizedBox();
+            return const SizedBox();
           },
         ),
       ),

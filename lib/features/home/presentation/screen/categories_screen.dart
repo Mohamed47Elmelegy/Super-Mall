@@ -26,7 +26,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarBackTitle(title: 'Categories'),
+      appBar: AppbarBackTitle(),
       body: RefreshIndicator(
         onRefresh: () async {
           await context.read<CategoryCubit>().getCategories();
@@ -36,11 +36,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Shop by Categories',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w500,
+              Center(
+                child: Text(
+                  'Shop by Categories',
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               SizedBox(height: 20.h),

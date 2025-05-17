@@ -8,6 +8,8 @@ import 'package:super_mall/core/theme/theme_data/theme_data_light.dart';
 import 'package:super_mall/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:super_mall/features/home/data/repository/banner_repository.dart';
 import 'package:super_mall/features/home/presentation/cubit/category_cubit.dart';
+import 'package:super_mall/features/profile/domain/repositories/profile_repository.dart';
+import 'package:super_mall/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:super_mall/service_locator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/features/auth/login/logic/cubit/login_cubit.dart';
@@ -82,6 +84,9 @@ class MainApp extends StatelessWidget {
                 getIt<WishListRepository>(),
                 1, // Default userId
               )..loadWishList(),
+            ),
+            BlocProvider<ProfileCubit>(
+              create: (context) => ProfileCubit(getIt<ProfileRepository>()),
             ),
           ],
           child: MaterialApp(

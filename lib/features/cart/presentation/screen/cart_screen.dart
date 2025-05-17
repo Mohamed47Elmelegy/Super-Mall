@@ -17,12 +17,6 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Cart',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         actions: [
           BlocBuilder<CartCubit, CartState>(
             builder: (context, state) {

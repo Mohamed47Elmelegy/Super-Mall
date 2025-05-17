@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             await prefs.setString('token', token);
           }
           if (mounted) {
-            Navigator.pushReplacementNamed(context, PageRoutesName.home);
+            Navigator.pushReplacementNamed(context, PageRoutesName.login);
           }
         }
       },

@@ -13,6 +13,9 @@ import 'features/product/data/repository/product.dart';
 import 'features/user/address_info/data/repositories/address_repository.dart';
 import 'features/user/address_info/data/repositories/address_repository_impl.dart';
 import 'features/wishlist/data/wishlist_repository.dart';
+import 'features/profile/data/services/profile_service.dart';
+import 'features/profile/data/repositories/profile_repository_impl.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -84,5 +87,14 @@ void _setupRepositories() {
   // WishList
   getIt.registerLazySingleton<WishListRepository>(
     () => WishListRepository(),
+  );
+
+  // Profile
+  getIt.registerLazySingleton<ProfileService>(
+    () => ProfileService(getIt<ApiClient>().dio),
+  );
+
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(getIt<ProfileService>()),
   );
 }

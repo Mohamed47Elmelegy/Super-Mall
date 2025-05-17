@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_mall/shared/widget/appbar_back_title.dart';
-import 'package:super_mall/shared/widget/gridview_primary.dart';
-import 'package:super_mall/shared/widget/item.dart';
+import 'package:super_mall/shared/widget/animated_product_list.dart';
 import 'package:super_mall/features/product/data/model/product.dart';
-import 'package:super_mall/features/wishlist/logic/wishlist_cubit.dart';
-import 'package:super_mall/features/product/logic/cubit/product_cubit.dart';
-import 'package:super_mall/features/product/logic/cubit/product_state.dart';
-
-import '../../../../wishlist/logic/wishlist_state.dart';
 
 class WishlistListScreen extends StatelessWidget {
   final String title;
@@ -36,13 +29,12 @@ class WishlistListScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 16.sp),
                 ),
               )
-            : SingleChildScrollView(
-                child: GridViewPrimary(
-                  items: products
-                      .map((product) => Item(product: product))
-                      .toList(),
-                  childAspectRatio: 0.6,
-                ),
+            : AnimatedProductList(
+                products: products,
+                childAspectRatio: 0.6,
+                crossAxisCount: 2,
+                spacing: 5,
+                padding: EdgeInsets.zero,
               ),
       ),
     );
