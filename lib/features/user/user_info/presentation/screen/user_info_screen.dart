@@ -60,6 +60,22 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               child: Column(
                 children: [
                   _buildAvatarImage(),
+                  SizedBox(height: 10.h),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, PageRoutesName.userInfoEdit);
+                      // تأكد من وجود route باسم /profile أو استخدم MaterialPageRoute
+                    },
+                    child: Text(
+                      'عرض الملف الشخصي',
+                      style: TextStyle(
+                        color: AppColorLight.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 20.h),
                   _buildUserInfo(context),
                   SizedBox(height: 30.h),

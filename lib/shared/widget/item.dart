@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_mall/core/theme/app_color/app_color_light.dart';
 import 'package:super_mall/features/product/data/model/product.dart';
 import 'package:super_mall/core/routes/page_routes_name.dart';
+import 'package:super_mall/features/wishlist/logic/wishlist_cubit.dart';
+import 'package:super_mall/features/wishlist/logic/wishlist_state.dart';
 
 import '../../features/cart/logic/cubit/cart_cubit.dart';
 
@@ -58,8 +60,28 @@ class Item extends StatelessWidget {
                     Positioned(
                       right: 0,
                       top: 0,
-                      child: SvgPicture.asset(
-                        'assets/vectors/fav-icon.svg',
+                      child: BlocBuilder<WishListCubit, WishListState>(
+                        builder: (context, state) {
+                          final isFavorite =
+                              state.wishListIds.contains(product.code);
+                          return GestureDetector(
+                            onTap: () {
+                              context
+                                  .read<WishListCubit>()
+                                  .toggleWish(product.code);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(8.r),
+                              child: SvgPicture.asset(
+                                isFavorite
+                                    ? 'assets/vectors/fav-filled.svg'
+                                    : 'assets/vectors/fav-icon.svg',
+                                width: 24.w,
+                                height: 24.h,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

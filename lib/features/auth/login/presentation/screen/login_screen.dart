@@ -149,6 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
+
         hintText: 'Email',
         hintStyle: TextStyle(
           color: AppColorLight.grey2,
@@ -224,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ? const SkeletonButton()
           : ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColorLight.primary,
+                backgroundColor: AppColorLight.button,
               ),
               onPressed: () {
                 if (_emailController.text.isEmpty) {
@@ -243,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text(
                 'Continue',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: AppColorLight.textButton),
               ),
             ),
     );
@@ -298,7 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ? const SkeletonButton()
           : ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColorLight.primary,
+                backgroundColor: AppColorLight.button,
               ),
               onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
@@ -312,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text(
                 'Sign In',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: AppColorLight.textButton),
               ),
             ),
     );

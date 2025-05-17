@@ -62,19 +62,19 @@ class _ProductScreenState extends State<ProductScreen> {
           builder: (context, state) {
             final isFavorite = state.wishListIds
                 .contains(widget.product?.code ?? widget.productCode);
-            return IconButton(
-              onPressed: () {
+            return GestureDetector(
+              onTap: () {
                 final productId = widget.product?.code ?? widget.productCode;
-                log('Favorite icon pressed for productId: $productId');
-                if (productId != null) {
-                  context.read<wishlist.WishListCubit>().toggleWish(productId);
-                }
+                context.read<wishlist.WishListCubit>().toggleWish(productId);
               },
-              icon: SvgPicture.asset(
-                'assets/vectors/fav-icon.svg',
-                colorFilter: ColorFilter.mode(
-                  isFavorite ? Colors.red : Colors.grey,
-                  BlendMode.srcIn,
+              child: Container(
+                padding: EdgeInsets.all(8.r),
+                child: SvgPicture.asset(
+                  isFavorite
+                      ? 'assets/vectors/fav-filled.svg'
+                      : 'assets/vectors/fav-icon.svg',
+                  width: 24.w,
+                  height: 24.h,
                 ),
               ),
             );
@@ -508,7 +508,7 @@ class _ProductScreenState extends State<ProductScreen> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
           decoration: BoxDecoration(
-            color: const Color(0xFFEADCD1), // Light beige
+            color: AppColorLight.button, // Light beige
             borderRadius: BorderRadius.circular(30.r),
           ),
           child: Row(
@@ -518,7 +518,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 'EGP${(product.price * (quantity == 0 ? 1 : quantity)).toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 15.sp,
-                  color: Colors.black87,
+                  color: AppColorLight.textButton,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -526,7 +526,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 'Add to cart',
                 style: TextStyle(
                   fontSize: 16.sp,
-                  color: Colors.black87,
+                  color: AppColorLight.textButton,
                   fontWeight: FontWeight.w400,
                 ),
               ),

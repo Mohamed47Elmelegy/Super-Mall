@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-
 import '../../../../core/routes/page_routes_name.dart';
 import '../../../../core/theme/app_color/app_color_light.dart';
 
@@ -38,16 +36,16 @@ class CartEmpty extends StatelessWidget {
           SizedBox(height: 24.h),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColorLight.primary,
+              backgroundColor: AppColorLight.button,
             ),
             onPressed: () {
               // Navigate to products or home screen
               Navigator.of(context).pushReplacementNamed(PageRoutesName.home);
             },
             child: Text(
-              'Explore Categories',
+              'Explore Products',
               style: TextStyle(
-                color: Colors.black,
+                color: AppColorLight.textButton,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w400,
               ),
